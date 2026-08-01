@@ -1,0 +1,109 @@
+@if (product(); as prod) {
+  <div class="product-detail">
+    <div class="breadcrumb">
+      <a [routerLink]="['/']">Home</a>
+      <span>/</span>
+      <span>{{ prod.name }}</span>
+    </div>
+
+    <div class="container">
+      <div class="image-section">
+        <img
+          ngSrc="prod.image"
+          [alt]="prod.name"
+          class="main-image"
+          width="500"
+          height="400"
+          loading="lazy"
+        >
+      </div>
+
+      <div class="details-section">
+        <header>
+          <h1>{{ prod.name }}</h1>
+          <p class="category">{{ prod.category }}</p>
+        </header>
+
+        <div class="rating">
+          <span class="stars" [attr.aria-label]="'Rating: ' + prod.rating + ' out of 5'">
+            ⭐ {{ prod.rating }} / 5
+          </span>
+        </div>
+
+        <div class="price-section">
+          <div class="price">
+            <span class="label">Price:</span>
+            <span class="amount">${{ prod.price | number: '1.2-2' }}</span>
+          </div>
+        </div>
+
+        <div class="description">
+          <h2>Description</h2>
+          <p>{{ prod.description }}</p>
+        </div>
+
+        <div class="stock">
+          <span class="label">Stock:</span>
+          @if (prod.stock > 0) {
+            <span class="available">{{ prod.stock }} in stock</span>
+          } @else {
+            <span class="unavailable">Out of stock</span>
+          }
+        </div>
+
+        <div class="purchase-section">
+          <div class="quantity-control">
+            <label for="quantity">Quantity:</label>
+            <div class="quantity-selector">
+              <button
+                (click)="decrementQuantity()"
+                [disabled]="quantity() === 1"
+                aria-label="Decrease quantity"
+              >
+                −
+              </button>
+              <input
+                id="quantity"
+                type="number"
+                [value]="quantity()"
+                [min]="1"
+                [max]="prod.stock"
+                readonly
+              >
+              <button
+                (click)="incrementQuantity()"
+                [disabled]="quantity() >= prod.stock"
+                aria-label="Increase quantity"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <button
+            class="btn-add-cart"
+            (click)="addToCart()"
+            [disabled]="prod.stock === 0"
+            [attr.aria-label]="'Add ' + quantity() + ' ' + prod.name + ' to cart'"
+          >
+            Add to Cart
+          </button>
+        </div>
+
+        @if (addedToCart()) {
+          <div class="success-message" role="status" aria-live="polite">
+            ✓ Added to cart successfully!
+          </div>
+        }
+
+        <a [routerLink]="['/']" class="back-link">← Back to Products</a>
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="not-found">
+    <h1>Product not found</h1>
+    <p>The product you're looking for doesn't exist.</p>
+    <a [routerLink]="['/']" class="btn-back">Back to Products</a>
+  </div>
+}

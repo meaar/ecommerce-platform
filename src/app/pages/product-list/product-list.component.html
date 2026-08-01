@@ -1,0 +1,14 @@
+<section class="products-section">
+  <header>
+    <h1>{{ title }}</h1>
+    <p class="subtitle">Discover our collection of premium tech products</p>
+  </header>
+
+  <div class="products-grid">
+    @for (product of productService.allProducts(); track product.id) {
+      <app-product-card [product]="product"></app-product-card>
+    } @empty {
+      <p class="empty-message">No products available</p>
+    }
+  </div>
+</section>

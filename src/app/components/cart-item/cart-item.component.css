@@ -1,0 +1,140 @@
+.cart-item {
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease;
+}
+
+.cart-item:hover {
+  background-color: #f9f9f9;
+}
+
+.cart-item td {
+  padding: 1.5rem;
+  vertical-align: middle;
+}
+
+.product-info {
+  display: flex;
+  gap: 1rem;
+}
+
+.product-thumbnail {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.name {
+  margin: 0;
+  font-weight: 600;
+  color: #0a0e27;
+}
+
+.price {
+  margin: 0.25rem 0 0 0;
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.quantity {
+  text-align: center;
+}
+
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  padding: 0.25rem;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.quantity-selector button {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  transition: color 0.2s ease;
+}
+
+.quantity-selector button:hover:not(:disabled) {
+  color: #0066cc;
+}
+
+.quantity-selector button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #999;
+}
+
+.quantity-value {
+  width: 40px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.subtotal {
+  text-align: center;
+  font-weight: 600;
+  color: #0a0e27;
+}
+
+.subtotal p {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.actions {
+  text-align: center;
+}
+
+.btn-remove {
+  padding: 0.5rem 1rem;
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 0.85rem;
+}
+
+.btn-remove:hover {
+  background-color: #ff5252;
+}
+
+@media (max-width: 768px) {
+  .cart-item td {
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .product-thumbnail {
+    width: 50px;
+    height: 50px;
+  }
+
+  .quantity-selector {
+    scale: 0.9;
+  }
+
+  .btn-remove {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+  }
+}

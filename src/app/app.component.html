@@ -1,0 +1,32 @@
+<header class="header">
+  <div class="header-container">
+    <h1 class="logo">
+      <a [routerLink]="['/']">{{ title }}</a>
+    </h1>
+    
+    <nav class="nav-menu" role="navigation" aria-label="Main navigation">
+      <ul>
+        <li>
+          <a [routerLink]="['/']" routerLinkActive="active" routerLinkActiveOptions="{ exact: true }">
+            Home
+          </a>
+        </li>
+        <li>
+          <a [routerLink]="['/cart']" routerLinkActive="active">
+            Cart <span class="cart-badge" aria-label="Items in cart: {{ productService.cartItemCount() }}">
+              {{ productService.cartItemCount() }}
+            </span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>
+
+<footer class="footer">
+  <p>&copy; 2026 E-commerce Store. Built with Angular v22+</p>
+</footer>

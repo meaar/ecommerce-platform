@@ -1,0 +1,52 @@
+<tr class="cart-item">
+  <td class="product-info">
+    <img
+      ngSrc="item().product.image"
+      [alt]="item().product.name"
+      class="product-thumbnail"
+      width="60"
+      height="60"
+      loading="lazy"
+    >
+    <div class="details">
+      <p class="name">{{ item().product.name }}</p>
+      <p class="price">${{ item().product.price | number: '1.2-2' }}</p>
+    </div>
+  </td>
+
+  <td class="quantity">
+    <div class="quantity-selector">
+      <button
+        (click)="decrementQuantity()"
+        [disabled]="item().quantity === 1"
+        aria-label="Decrease quantity"
+      >
+        −
+      </button>
+      <span class="quantity-value" [attr.aria-label]="'Quantity: ' + item().quantity">
+        {{ item().quantity }}
+      </span>
+      <button
+        (click)="incrementQuantity()"
+        [disabled]="item().quantity >= item().product.stock"
+        aria-label="Increase quantity"
+      >
+        +
+      </button>
+    </div>
+  </td>
+
+  <td class="subtotal">
+    <p>${{ (item().product.price * item().quantity) | number: '1.2-2' }}</p>
+  </td>
+
+  <td class="actions">
+    <button
+      class="btn-remove"
+      (click)="remove()"
+      [attr.aria-label]="'Remove ' + item().product.name + ' from cart'"
+    >
+      Remove
+    </button>
+  </td>
+</tr>

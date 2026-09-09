@@ -1,0 +1,22 @@
+{
+  "name": "ecommerce-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "REST API for the ecommerce application",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "migrate:users": "node scripts/migrate-json-users.js"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.946.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "helmet": "^8.3.0",
+    "multer": "^2.0.2",
+    "pg": "^8.23.0"
+  }
+}

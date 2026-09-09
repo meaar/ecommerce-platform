@@ -1,0 +1,259 @@
+.header {
+  background-color: #0a0e27;
+  color: white;
+  padding: 1rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.logo a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.logo a:hover {
+  color: #66d9ff;
+}
+
+.nav-menu ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-menu a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-menu a:hover {
+  color: #66d9ff;
+}
+
+.nav-menu a.active {
+  color: #66d9ff;
+}
+
+.cart-badge {
+  background-color: #ff6b6b;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.account-menu {
+  position: relative;
+}
+
+.account-menu::after {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 100%;
+  height: .7rem;
+  content: '';
+}
+
+.account-trigger {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  box-sizing: border-box;
+  min-height: 42px;
+  padding: .25rem .4rem;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  color: white;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.account-trigger:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.account-trigger:focus-visible {
+  outline: 2px solid #66d9ff;
+  outline-offset: 2px;
+}
+
+.account-menu.is-open .account-trigger,
+.account-menu:hover:not(.is-dismissed) .account-trigger {
+  border-color: #66d9ff;
+  background: rgba(255, 255, 255, .12);
+}
+
+.account-avatar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  overflow: hidden;
+  border-radius: 50%;
+  color: #0a0e27;
+  background: #66d9ff;
+  font-size: .9rem;
+  font-weight: 800;
+}
+
+.account-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.account-name {
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-chevron {
+  font-size: .7rem;
+}
+
+.account-dropdown {
+  position: absolute;
+  top: calc(100% + .7rem);
+  right: 0;
+  z-index: 110;
+  display: grid;
+  min-width: 220px;
+  padding: .5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, .2);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity .18s ease, transform .18s ease;
+}
+
+.account-menu.is-open .account-dropdown,
+.account-menu:hover:not(.is-dismissed) .account-dropdown {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.account-summary {
+  display: grid;
+  gap: .2rem;
+  padding: .7rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.account-summary strong {
+  color: #0f172a;
+}
+
+.account-summary span {
+  overflow: hidden;
+  color: #64748b;
+  font-size: .8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-dropdown a,
+.account-dropdown .logout-button {
+  padding: .7rem;
+  border-radius: 5px;
+  color: #334155;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.account-dropdown a:hover,
+.account-dropdown a.active,
+.account-dropdown .logout-button:hover {
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.account-dropdown .logout-button {
+  width: 100%;
+  border: 0;
+}
+
+.main-content {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  min-height: calc(100vh - 200px);
+}
+
+.footer {
+  background-color: #0a0e27;
+  color: white;
+  text-align: center;
+  padding: 2rem;
+  margin-top: 4rem;
+}
+
+.footer p {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .nav-menu ul {
+    gap: 1rem;
+  }
+
+  .account-name {
+    display: none;
+  }
+
+  .account-dropdown {
+    right: -1rem;
+  }
+
+  .logo {
+    font-size: 1.25rem;
+  }
+}

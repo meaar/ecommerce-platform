@@ -1,0 +1,12 @@
+<section class="profile-page">
+  <div class="profile-card">
+    <p class="eyebrow">Minha conta</p><h1>Perfil</h1>
+    @if (authService.user(); as user) {
+      <div class="identity"><div class="avatar">@if (previewUrl || (avatarUrl() && !avatarFailed)) { <img [src]="previewUrl || avatarUrl()" alt="Foto de perfil" (error)="onAvatarError()"> } @else { {{ user.name.charAt(0).toUpperCase() }} }</div><div><h2>{{ user.name }}</h2><p>{{ user.email }}</p></div></div>
+      <label class="file-picker">Escolher foto<input type="file" accept="image/jpeg,image/png,image/webp" (change)="chooseFile($event)"></label>
+      <p class="hint">JPG, PNG ou WebP, ate 5 MB.</p>
+      <button type="button" [disabled]="!selectedFile || uploading" (click)="upload()">{{ uploading ? 'Enviando...' : 'Enviar foto' }}</button>
+      @if (success) { <p class="success">{{ success }}</p> } @if (error) { <p class="error">{{ error }}</p> }
+    }
+  </div>
+</section>

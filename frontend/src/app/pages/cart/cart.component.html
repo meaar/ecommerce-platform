@@ -1,0 +1,77 @@
+<section class="cart-section">
+  <header>
+    <h1>Shopping Cart</h1>
+  </header>
+
+  @if (productService.cartItems().length > 0) {
+    <div class="cart-container">
+      <div class="cart-items">
+        <table class="cart-table" role="table" aria-label="Shopping cart items">
+          <thead>
+            <tr>
+              <th scope="col">Product</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Subtotal</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of productService.cartItems(); track item.product.id) {
+              <app-cart-item
+                [item]="item"
+                (quantityChanged)="onQuantityChanged($event)"
+                (removed)="onItemRemoved($event)"
+              ></app-cart-item>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <aside class="cart-summary">
+        <div class="summary-card">
+          <h2>Order Summary</h2>
+
+          <div class="summary-row">
+            <span>Subtotal:</span>
+            <span>${{ productService.cartTotal() | number: '1.2-2' }}</span>
+          </div>
+
+          <div class="summary-row">
+            <span>Shipping:</span>
+            <span>FREE</span>
+          </div>
+
+          <div class="summary-row">
+            <span>Tax:</span>
+            <span>${{ (productService.cartTotal() * 0.1) | number: '1.2-2' }}</span>
+          </div>
+
+          <div class="summary-row total">
+            <span>Total:</span>
+            <span>${{ (productService.cartTotal() * 1.1) | number: '1.2-2' }}</span>
+          </div>
+
+          <button
+            class="btn-checkout"
+            (click)="checkout()"
+            aria-label="Proceed to checkout"
+          >
+            Proceed to Checkout
+          </button>
+          @if (checkoutError) { <p class="checkout-error" role="alert">{{ checkoutError }}</p> }
+          @if (checkoutSuccess) { <p class="checkout-success" role="status">{{ checkoutSuccess }}</p> }
+
+          <a [routerLink]="['/']" class="btn-continue-shopping">Continue Shopping</a>
+        </div>
+      </aside>
+    </div>
+  } @else {
+    <div class="empty-cart">
+      <div class="empty-content">
+        <h2>Your cart is empty</h2>
+        <p>Add some products to get started!</p>
+        <a [routerLink]="['/']" class="btn-shop">Start Shopping</a>
+      </div>
+    </div>
+  }
+</section>

@@ -1,0 +1,72 @@
+<header class="header">
+  <div class="header-container">
+    <h1 class="logo">
+      <a [routerLink]="['/']">{{ title }}</a>
+    </h1>
+    
+    <nav class="nav-menu" role="navigation" aria-label="Main navigation">
+      <ul>
+        <li>
+          <a [routerLink]="['/']" routerLinkActive="active" routerLinkActiveOptions="{ exact: true }">
+            Home
+          </a>
+        </li>
+        <li>
+          <a [routerLink]="['/cart']" routerLinkActive="active">
+            Cart <span class="cart-badge" aria-label="Items in cart: {{ productService.cartItemCount() }}">
+              {{ productService.cartItemCount() }}
+            </span>
+          </a>
+        </li>
+        @if (authService.user(); as user) {
+          <li
+            class="account-menu"
+            [class.is-open]="accountMenuOpen"
+            [class.is-dismissed]="accountMenuDismissed"
+            (mouseenter)="onAccountMenuEnter()"
+            (mouseleave)="onAccountMenuLeave()"
+          >
+            <button
+              type="button"
+              class="account-trigger"
+              aria-haspopup="true"
+              [attr.aria-expanded]="accountMenuOpen"
+              aria-label="Abrir menu de {{ user.name }}"
+              (click)="toggleAccountMenu($event)"
+            >
+              <span class="account-avatar" aria-hidden="true">
+                @if (authService.avatarUrl(user) && !avatarFailed) {
+                  <img [src]="authService.avatarUrl(user) + '&r=' + authService.avatarRevision()" [alt]="'Foto de ' + user.name" (error)="onAvatarError()">
+                } @else {
+                  {{ user.name.charAt(0).toUpperCase() }}
+                }
+              </span>
+              <span class="account-name">{{ user.name }}</span>
+              <span class="account-chevron" aria-hidden="true">&#9662;</span>
+            </button>
+
+            <div class="account-dropdown" role="menu">
+              <div class="account-summary">
+                <strong>{{ user.name }}</strong>
+                <span>{{ user.email }}</span>
+              </div>
+              <a routerLink="/orders" routerLinkActive="active" role="menuitem" (click)="closeAccountMenu()">Meus pedidos</a>
+              <a routerLink="/profile" routerLinkActive="active" role="menuitem" (click)="closeAccountMenu()">Minha conta</a>
+              <button type="button" class="logout-button" role="menuitem" (click)="logout()">Sair</button>
+            </div>
+          </li>
+        } @else {
+          <li><a [routerLink]="['/login']" routerLinkActive="active">Entrar</a></li>
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>
+
+<footer class="footer">
+  <p>&copy; 2026 E-commerce Store. Built with Angular v22+</p>
+</footer>

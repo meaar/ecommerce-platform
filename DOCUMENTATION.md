@@ -1,316 +1,112 @@
-# 📚 Documentação do Projeto E-commerce Angular v22
+# Documentacao tecnica da aplicacao
 
-## 🎯 Resumo Executivo
+Este arquivo registra as decisoes tecnicas e os limites atuais da plataforma. Para instalar, executar ou publicar o projeto, consulte o [README principal](README.md).
 
-Um projeto **completo e funcional** de e-commerce construído com as melhores práticas do Angular v22, incluindo:
+## Arquitetura
 
-- ✅ Componentes standalone modernos
-- ✅ Signals para gerenciamento de estado reativo
-- ✅ Control flow nativo (@if, @for, @switch)
-- ✅ WCAG AA accessibility compliant
-- ✅ Design responsivo mobile-first
-- ✅ TypeScript strict mode
-- ✅ Arquitetura limpa e escalável
+O projeto e dividido em dois aplicativos independentes:
 
----
+- `frontend/`: aplicacao Angular 22 executada no navegador.
+- `backend/`: API REST Node.js 24 com Express 5.
 
-## 📦 O Que Foi Criado
+A infraestrutura conteinerizada usa:
 
-### 1. **Configuração Base**
-- ✅ `package.json` - Dependências Angular v22
-- ✅ `tsconfig.json` - TypeScript strict mode
-- ✅ `angular.json` - Configuração do build
-- ✅ `.gitignore` - Arquivos ignorados pelo Git
+- PostgreSQL 18 para usuarios e sessoes.
+- RustFS para armazenamento de avatares via SDK S3.
+- Nginx para servir o build estatico do frontend.
+- Docker Compose para orquestrar PostgreSQL, backend e frontend.
 
-### 2. **Estrutura Principal**
-- ✅ `src/main.ts` - Bootstrap com standalone component
-- ✅ `src/index.html` - HTML principal
-- ✅ `src/styles.css` - Estilos globais + utilidades
+O RustFS nao e criado pelo `docker-compose.yml`. Ele deve existir previamente e ser conectado a rede externa `ecommerce-net`.
 
-### 3. **Configuração da Aplicação**
-- ✅ `app.config.ts` - Providers e configurações
-- ✅ `app.routes.ts` - Definição de rotas
-- ✅ `app.component.ts/html/css` - Componente raiz com header e footer
+## Backend
 
-### 4. **Serviço de Estado**
-- ✅ `services/product.service.ts`
-  - Signals para produtos e carrinho
-  - Computed values para totais
-  - Métodos para gerenciar carrinho
-  - Interface de tipos TypeScript
+O ponto de entrada e `backend/index.js`. A composicao da aplicacao fica em `backend/src/app.js` e as dependencias compartilhadas sao criadas por `backend/src/container.js`.
 
-### 5. **Componentes de Página**
+Responsabilidades das camadas:
 
-#### ProductListComponent
-- Lista de produtos em grid responsivo
-- Usa o novo control flow (@for)
-- Integrado com ProductCardComponent
+- `routes`: define os caminhos HTTP e associa middlewares aos controllers.
+- `controllers`: interpreta requisicoes e monta respostas HTTP.
+- `services`: concentra regras de negocio e integracoes externas.
+- `repositories`: encapsula o acesso ao PostgreSQL.
+- `middlewares`: autenticacao, upload, rate limit e tratamento de erros.
+- `utils`: funcoes reutilizaveis sem estado.
 
-#### ProductDetailComponent
-- Página de detalhes completa
-- Seletor de quantidade
-- Notificação de "Added to cart"
-- Breadcrumb de navegação
-- Tratamento de produto não encontrado
+Na inicializacao, o backend cria as tabelas `users` e `sessions` caso elas ainda nao existam. O `UserRepository` usa queries parametrizadas.
 
-#### CartComponent
-- Tabela de itens do carrinho
-- Resumo do pedido com totais
-- Cálculo automático de impostos
-- Botão de checkout
+## Autenticacao e sessoes
 
-### 6. **Componentes Reutilizáveis**
+O cadastro e o login criam uma sessao persistida no PostgreSQL. O identificador da sessao e enviado em cookie `HttpOnly`, com `SameSite=Lax` e validade de sete dias. O token nao fica disponivel para o JavaScript do frontend.
 
-#### ProductCardComponent
-- Card responsivo do produto
-- Imagem, nome, rating, preço
-- Badge de stock baixo
-- Botões "View Details" e "Add to Cart"
+As rotas protegidas usam o middleware de autenticacao para validar o cookie e carregar o usuario atual. O frontend restaura a sessao com `GET /api/auth/me`.
 
-#### CartItemComponent
-- Item individual no carrinho
-- Seletor de quantidade
-- Subtotal automático
-- Botão remover
+## Upload de avatar
 
----
+O fluxo de upload e:
 
-## 🎨 Design & Acessibilidade
-
-### Cores
-- **Primary**: #0066cc (Azul)
-- **Danger**: #ff6b6b (Vermelho)
-- **Success**: #27ae60 (Verde)
-- **Dark**: #0a0e27 (Cabeçalho/Footer)
-
-### Responsividade
-- ✅ Mobile: < 480px
-- ✅ Tablet: 481px - 768px
-- ✅ Desktop: > 768px
-
-### Acessibilidade (WCAG AA)
-- ✅ Semantic HTML (header, main, section, article)
-- ✅ ARIA labels e roles
-- ✅ Keyboard navigation (Tab, Enter, Arrow keys)
-- ✅ Focus states visíveis
-- ✅ Contraste de cores adequado
-- ✅ Labels associadas a inputs
-- ✅ Alt text em imagens
-
----
-
-## 🚀 Começando
-
-### 1. Instalar Dependências
-```bash
-cd c:\Users\Me\Desktop\angular
-npm install
+```text
+frontend -> POST /api/profile/avatar -> backend -> RustFS
 ```
 
-### 2. Iniciar Servidor de Desenvolvimento
-```bash
-npm start
+O backend valida o arquivo recebido, grava o objeto no bucket configurado em `RUSTFS_BUCKET` e atualiza a referencia do avatar do usuario. As credenciais do RustFS ficam somente no ambiente do backend.
+
+O endpoint `GET /api/profile/avatar/:userId` faz o streaming do objeto para o navegador. O arquivo original `backend/data/users.json` nao e lido pela aplicacao normal.
+
+## Pedidos
+
+A rota `POST /api/orders` exige autenticacao, valida se existem itens no carrinho e retorna um identificador de pedido e a quantidade de itens recebida. No estado atual, pedidos ainda nao possuem repository ou tabela propria no PostgreSQL; o `orderId` e gerado em memoria.
+
+## Frontend
+
+O frontend usa componentes standalone, Signals e o control flow nativo do Angular. O `ProductService` mantem o catalogo mockado e o carrinho em memoria. O `AuthService` concentra cadastro, login, logout, restauracao de sessao e upload de avatar.
+
+As rotas protegidas sao `/cart`, `/profile` e `/orders`. Usuarios nao autenticados sao redirecionados para `/login`.
+
+A URL da API e definida em `frontend/src/environments/environment.ts`. Para um ambiente publicado em outro dominio, essa URL precisa ser alterada antes do build do frontend.
+
+## Variaveis de ambiente
+
+O exemplo completo fica em `backend/.env.example`:
+
+```text
+PORT=3000
+FRONTEND_ORIGIN=http://localhost:4200
+NODE_ENV=development
+RUSTFS_ENDPOINT=http://rustfs:9000
+RUSTFS_REGION=sa-east-1
+RUSTFS_ACCESS_KEY=...
+RUSTFS_SECRET_KEY=...
+RUSTFS_BUCKET=profile-images
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=ecommerce
+POSTGRES_USER=ecommerce
+POSTGRES_PASSWORD=...
 ```
 
-### 3. Acessar a Aplicação
-```
-http://localhost:4200
-```
+Em desenvolvimento local, `POSTGRES_HOST` e `RUSTFS_ENDPOINT` normalmente apontam para `localhost`. Dentro do Compose, eles devem apontar para os nomes dos servicos e containers da rede Docker.
 
-### 4. Build para Produção
-```bash
-npm run build
-```
+## Deploy
 
----
+O deploy recomendado e feito pela raiz do projeto:
 
-## 📝 Boas Práticas Implementadas
-
-### Angular v22
-```typescript
-// ✅ Componente standalone
-@Component({
-  selector: 'app-product-card',
-  templateUrl: './product-card.component.html',
-  styleUrl: './product-card.component.css',
-  imports: [CommonModule, RouterLink]  // Sem NgModule
-})
-
-// ✅ Input Signal API
-readonly product = input.required<Product>();
-
-// ✅ Signal para estado
-protected readonly quantity = signal(1);
+```powershell
+docker network create ecommerce-net
+docker network connect ecommerce-net rustfs
+Copy-Item backend/.env.example backend/.env
+docker compose up --build -d
 ```
 
-### Templates Modernos
-```html
-<!-- ✅ Control flow nativo -->
-@if (product(); as prod) {
-  <div>{{ prod.name }}</div>
-} @else {
-  <p>Product not found</p>
-}
+O frontend e compilado na imagem `frontend` e servido por Nginx na porta `80`, publicada pelo Compose como `http://localhost:4200`. O backend roda em modo `production` na porta `3000`. O volume `postgres-data-v18` preserva o banco entre recriacoes dos containers.
 
-<!-- ✅ For loop nativo -->
-@for (item of items; track item.id) {
-  <app-item [item]="item"></app-item>
-}
+Antes de publicar, altere as credenciais, configure `NODE_ENV=production`, ajuste `FRONTEND_ORIGIN` e mantenha `backend/.env` fora do Git. Dominio, HTTPS, firewall, monitoramento e backups automaticos nao sao configurados pelo Compose e pertencem a infraestrutura de producao.
+
+## Migracao do JSON legado
+
+O comando abaixo deve ser executado uma vez, com o PostgreSQL disponivel:
+
+```powershell
+cd backend
+npm run migrate:users
 ```
 
-### TypeScript Strict
-```typescript
-// ✅ Tipos bem definidos
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-}
-
-// ✅ Sem 'any'
-readonly products = signal<Product[]>([]);
-
-// ✅ Inject function
-constructor(private route = inject(ActivatedRoute)) {}
-```
-
----
-
-## 🔄 Fluxo de Dados
-
-```
-┌─────────────────────────────────────┐
-│    ProductService (Signals)         │
-│  - products signal                  │
-│  - cart signal                      │
-│  - Computed values (total, count)   │
-└──────────────┬──────────────────────┘
-               │
-               ↓
-┌─────────────────────────────────────┐
-│    Componentes de Página            │
-│  - ProductListComponent             │
-│  - ProductDetailComponent           │
-│  - CartComponent                    │
-└──────────────┬──────────────────────┘
-               │
-               ↓
-┌─────────────────────────────────────┐
-│    Componentes Reutilizáveis        │
-│  - ProductCardComponent             │
-│  - CartItemComponent                │
-└──────────────┬──────────────────────┘
-               │
-               ↓
-        ┌──────────────┐
-        │  Usuário UI  │
-        └──────────────┘
-```
-
----
-
-## 📊 Estrutura de Arquivos
-
-```
-angular/
-├── src/
-│   ├── app/
-│   │   ├── components/
-│   │   │   ├── product-card/
-│   │   │   │   ├── product-card.component.ts
-│   │   │   │   ├── product-card.component.html
-│   │   │   │   └── product-card.component.css
-│   │   │   └── cart-item/
-│   │   │       ├── cart-item.component.ts
-│   │   │       ├── cart-item.component.html
-│   │   │       └── cart-item.component.css
-│   │   ├── pages/
-│   │   │   ├── product-list/
-│   │   │   ├── product-detail/
-│   │   │   └── cart/
-│   │   ├── services/
-│   │   │   └── product.service.ts
-│   │   ├── app.component.ts
-│   │   ├── app.component.html
-│   │   ├── app.component.css
-│   │   ├── app.routes.ts
-│   │   └── app.config.ts
-│   ├── environments/
-│   │   └── environment.ts
-│   ├── main.ts
-│   ├── index.html
-│   └── styles.css
-├── package.json
-├── tsconfig.json
-├── tsconfig.app.json
-├── angular.json
-├── README.md
-└── .gitignore
-```
-
----
-
-## 🔮 Próximos Passos Sugeridos
-
-### 1. Conectar a uma API Real
-```typescript
-// Substituir mock data por HTTP calls
-@Injectable({ providedIn: 'root' })
-export class ProductService {
-  private http = inject(HttpClient);
-  
-  getProducts() {
-    return this.http.get<Product[]>('/api/products');
-  }
-}
-```
-
-### 2. Adicionar Autenticação
-- Implementar JWT
-- Guards de rotas
-- Interceptors para tokens
-
-### 3. Persistência de Dados
-- LocalStorage para carrinho
-- IndexedDB para cache
-
-### 4. Melhorias de UX
-- Filtros e busca
-- Paginação
-- Avaliações de produtos
-
-### 5. Performance
-- Code splitting
-- Lazy loading de componentes
-- Image optimization
-
----
-
-## 📚 Recursos Úteis
-
-- [Angular.dev](https://angular.dev)
-- [Signals Guide](https://angular.dev/guide/signals)
-- [Standalone Components](https://angular.dev/essentials/components)
-- [Template Syntax](https://angular.dev/essentials/templates)
-- [WCAG Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
-
----
-
-## ✅ Checklist de Qualidade
-
-- ✅ Componentes standalone (sem NgModules)
-- ✅ Signals para estado reativo
-- ✅ Control flow nativo
-- ✅ Input signal API
-- ✅ TypeScript strict mode
-- ✅ WCAG AA accessibility
-- ✅ Design responsivo
-- ✅ Componentes reutilizáveis
-- ✅ Rotas configuradas
-- ✅ Serviço bem estruturado
-- ✅ Estilos consistentes
-- ✅ Documentação completa
-
----
-
-**Desenvolvido com ❤️ usando Angular v22 com Signals e Componentes Standalone**
+A migracao importa `backend/data/users.json`. Depois da migracao, a API utiliza o PostgreSQL normalmente e nao altera o arquivo JSON.

@@ -1,220 +1,276 @@
 # 🛍️ E-commerce Application - Angular 22 + Node 24
 
-Uma aplicação e-commerce moderna e totalmente funcional, construída com **Angular 22** e **Node.js 24-slim** seguindo as melhores práticas atuais.
+Uma aplicacao de e-commerce dividida em frontend Angular e API Node.js, com catalogo de produtos, carrinho, autenticacao de usuarios, perfil com avatar e criacao de pedidos.
 
-## 📋 Características
+## 📋 Caracteristicas
 
-### ✨ Arquitetura Moderna
-- **Componentes Standalone** - Sem necessidade de NgModules
-- **Signals** - Gerenciamento de estado reativo e performático
-- **Novo Control Flow** - Usando `@if`, `@for`, `@switch` em templates
-- **Input Signal API** - Sem decoradores `@Input`/`@Output`
-- **Change Detection OnPush** - Otimização de performance
-- **Angular 22** - Última versão com melhorias de performance
+### Arquitetura
+- **Frontend Angular 22** com componentes standalone, Signals e novo control flow.
+- **Backend Node.js 24 + Express 5** organizado em rotas, controllers, services e repositories.
+- **PostgreSQL** para usuarios e sessoes persistentes.
+- **RustFS** compativel com S3 para armazenamento de avatares.
+- **Sessoes por cookie HttpOnly**, sem expor tokens ao JavaScript do navegador.
 
-### 🎨 Interface
-- Catálogo de produtos responsivo
-- Detalhes detalhados do produto
-- Carrinho de compras funcional
-- Header sticky com badge de itens no carrinho
-- Notificações de sucesso
+### Interface e funcionalidades
+- Catalogo responsivo de produtos.
+- Detalhes do produto com quantidade, avaliacao, preco e estoque.
+- Carrinho com alteracao de quantidades e calculo do total.
+- Cadastro, login, logout e restauracao de sessao.
+- Perfil protegido com upload de avatar.
+- Checkout protegido e criacao de pedidos.
+- Paginas de pedidos e perfil acessiveis somente a usuarios autenticados.
 
-### ♿ Acessibilidade
-- **WCAG AA Compliant** - Segue padrões WCAG 2.1 AA
-- **ARIA Attributes** - Labels e roles semânticos
-- **Keyboard Navigation** - Totalmente navegável por teclado
-- **Screen Reader Friendly** - Compatível com leitores de tela
+### Acessibilidade e responsividade
+- Navegacao por teclado, labels e roles semanticos.
+- Layout mobile-first para celulares, tablets e desktops.
+- Feedback visual para estados de hover, foco, carregamento e erro.
 
-### 📱 Responsivo
-- Mobile-first design
-- Breakpoints para tablets e desktops
-- Layouts adaptáveis
+## 🚀 Comecando
 
-## 🚀 Começando
+### Pre-requisitos
+- Node.js 24 ou superior.
+- PostgreSQL 18 ou superior.
+- RustFS em execucao para os uploads de avatar.
+- Docker Desktop, caso use o ambiente conteinerizado.
 
-### Pré-requisitos
-- Docker Desktop instalado e rodando
-- Node.js 24-slim container no Docker Desktop
+### Desenvolvimento local
 
-### Setup Rápido
-
-Execute este comando PowerShell para copiar e rodar a aplicação no seu container Docker:
+O backend espera PostgreSQL e RustFS disponiveis. Crie `backend/.env` a partir do exemplo e ajuste as conexoes:
 
 ```powershell
-$CONTAINER_NAME = "seu-container-aqui"
-$PROJECT_PATH = "c:\Users\Me\Desktop\angular"
-
-# 1. Copiar projeto para o container
-docker cp "$PROJECT_PATH\." $CONTAINER_NAME`:/app
-
-# 2. Instalar dependências e iniciar
-docker exec -it $CONTAINER_NAME bash -c "cd /app && npm ci --legacy-peer-deps && npm start -- --host 0.0.0.0"
+Copy-Item backend/.env.example backend/.env
 ```
 
-**Acesse:** http://localhost:4200
-
-### Alternativa: Script Único
+Para executar a API:
 
 ```powershell
-# Substitua seu-container-aqui pelo nome do seu container Docker
-docker cp "c:\Users\Me\Desktop\angular\." seu-container-aqui:/app && docker exec -it seu-container-aqui bash -c "cd /app && npm ci --legacy-peer-deps && npm start -- --host 0.0.0.0"
+cd backend
+npm install
+npm run dev
 ```
 
-### Ver Containers Disponíveis
+Para executar o frontend em outro terminal:
 
 ```powershell
-docker ps --format "table {{.Names}}\t{{.Image}}"
+cd frontend
+npm install
+npm start
 ```
 
-## 📁 Estrutura do Projeto
+Acesse `http://localhost:4200`. A API fica em `http://localhost:3000` e o health check em `http://localhost:3000/api/health`.
 
-```
-src/
-├── app/
-│   ├── components/          # Componentes reutilizáveis
-│   │   ├── product-card/    # Card do produto
-│   │   └── cart-item/       # Item do carrinho
-│   ├── pages/               # Componentes de páginas/rotas
-│   │   ├── product-list/    # Lista de produtos
-│   │   ├── product-detail/  # Detalhes do produto
-│   │   └── cart/            # Página do carrinho
-│   ├── services/            # Serviços da aplicação
-│   │   └── product.service.ts  # Gerenciamento de estado e dados
-│   ├── app.component.*      # Componente raiz
-│   ├── app.routes.ts        # Configuração de rotas
-│   └── app.config.ts        # Configuração da aplicação
-├── main.ts                  # Bootstrap da aplicação
-├── index.html              # HTML principal
-└── styles.css              # Estilos globais
+O comando abaixo importa, uma unica vez, usuarios do arquivo legado `backend/data/users.json` para o PostgreSQL:
+
+```powershell
+cd backend
+npm run migrate:users
 ```
 
-## 🎯 Componentes
+## 🐳 Rodando com Docker
+
+O `docker-compose.yml` inicia os containers do PostgreSQL, backend e frontend. O RustFS e um servico externo e precisa estar conectado a rede Docker `ecommerce-net`.
+
+1. Crie a rede e conecte o container existente do RustFS:
+
+```powershell
+docker network create ecommerce-net
+docker network connect ecommerce-net rustfs
+```
+
+Se a rede ou a conexao ja existirem, os avisos podem ser ignorados. O nome do container deve ser `rustfs` para que `RUSTFS_ENDPOINT=http://rustfs:9000` funcione.
+
+2. Configure o ambiente do backend:
+
+```powershell
+Copy-Item backend/.env.example backend/.env
+```
+
+No arquivo `backend/.env`, mantenha `POSTGRES_HOST=postgres` e `RUSTFS_ENDPOINT=http://rustfs:9000`.
+
+3. Construa e inicie os servicos:
+
+```powershell
+docker compose up --build -d
+```
+
+Abra `http://localhost:4200` no navegador. Para acompanhar os logs:
+
+```powershell
+docker compose logs -f backend frontend
+```
+
+Para parar os servicos:
+
+```powershell
+docker compose down
+```
+
+O volume `postgres-data-v18` preserva os dados do PostgreSQL quando os containers sao recriados.
+
+## 🚀 Deploy
+
+O deploy conteinerizado usa as mesmas imagens do desenvolvimento, mas executa o frontend compilado com Nginx e o backend em modo `production`.
+
+### Preparar o servidor
+
+Instale Docker com Compose e crie a rede externa usada pelos servicos:
+
+```powershell
+docker network create ecommerce-net
+docker network connect ecommerce-net rustfs
+```
+
+O container do RustFS precisa estar em execucao e acessivel pelo nome `rustfs` na porta `9000`. Crie o arquivo de ambiente do backend sem versiona-lo:
+
+```powershell
+Copy-Item backend/.env.example backend/.env
+```
+
+Em producao, altere pelo menos `NODE_ENV`, `FRONTEND_ORIGIN`, `RUSTFS_ACCESS_KEY`, `RUSTFS_SECRET_KEY` e `POSTGRES_PASSWORD`. Use senhas e chaves reais fornecidas pelo ambiente ou por um secret manager.
+
+### Publicar a versao
+
+Dentro da raiz do projeto:
+
+```powershell
+docker compose up --build -d
+docker compose ps
+```
+
+O frontend fica disponivel na porta `4200` e a API na porta `3000`. Em um servidor publico, coloque um proxy reverso com HTTPS na frente desses servicos e restrinja o acesso direto a porta da API quando possivel.
+
+### Atualizar a aplicacao
+
+Depois de enviar uma nova versao do codigo para o servidor:
+
+```powershell
+docker compose up --build -d
+docker compose ps
+```
+
+O volume `postgres-data-v18` nao e removido por `docker compose down`, portanto os dados do PostgreSQL permanecem entre atualizacoes. Nao use `docker compose down -v` sem um backup, pois isso remove o volume do banco.
+
+### Operacao e diagnostico
+
+```powershell
+docker compose logs -f backend
+docker compose logs -f frontend
+docker compose restart backend
+curl http://localhost:3000/api/health
+```
+
+Antes de uma atualizacao importante, faça backup do PostgreSQL e mantenha as credenciais fora do repositorio. O RustFS tambem deve possuir sua propria estrategia de backup dos objetos armazenados.
+
+O deploy atual nao configura dominio, HTTPS, firewall, monitoramento ou backup automatico. Esses itens devem ser fornecidos pela infraestrutura do ambiente de producao.
+
+## 📁 Estrutura do projeto
+
+```text
+frontend/
+  src/app/
+    components/       # product-card e cart-item
+    pages/             # catalogo, produto, carrinho, auth, perfil e pedidos
+    services/          # produtos e autenticacao
+backend/
+  index.js             # inicializacao HTTP
+  src/
+    config/            # configuracao por variaveis de ambiente
+    controllers/       # entrada e respostas HTTP
+    middlewares/       # autenticacao, upload, rate limit e erros
+    repositories/      # persistencia PostgreSQL
+    routes/            # endpoints da API
+    services/          # regras de negocio e RustFS
+```
+
+## 🎯 Componentes principais
 
 ### ProductService
-Gerencia o estado da aplicação usando **Signals**:
-- `allProducts` - Catálogo de produtos
-- `cartItems` - Itens no carrinho
-- `cartTotal` - Computed total do carrinho
-- `cartItemCount` - Computed quantidade de itens
+Mantem o catalogo e o carrinho usando Signals:
+- `allProducts`: produtos disponiveis.
+- `cartItems`: itens do carrinho.
+- `cartTotal`: total calculado do carrinho.
+- `cartItemCount`: quantidade total de itens.
 
-**Métodos:**
-- `getProductById()` - Buscar produto por ID
-- `addToCart()` - Adicionar ao carrinho
-- `removeFromCart()` - Remover do carrinho
-- `updateCartItemQuantity()` - Atualizar quantidade
-- `clearCart()` - Limpar carrinho
+### AuthService
+Gerencia cadastro, login, logout, restauracao da sessao e upload do avatar. A sessao e mantida pelo cookie seguro da API.
 
-### ProductListComponent
-Exibe a lista de produtos em um grid responsivo.
-
-### ProductCardComponent
-Card do produto com:
-- Imagem
-- Nome e descrição
-- Rating
-- Preço
-- Botão "Add to Cart"
-- Badge de stock baixo
-
-### ProductDetailComponent
-Página de detalhes com:
-- Imagem grande
-- Descrição completa
-- Seletor de quantidade
-- Rating e avaliações
-- Status de stock
-
-### CartComponent
-Carrinho de compras com:
-- Tabela de itens
-- Seletor de quantidade por item
-- Resumo do pedido
-- Total com impostos
-- Botão de checkout
-
-## 🎨 Estilos
-
-- **Design System Consistente** - Cores, tipografia e espaçamento padronizados
-- **Temas Hover/Focus** - Feedback visual para interações
-- **Dark Header** - Header com tema escuro (#0a0e27)
-- **Cores Primárias**: #0066cc (azul), #ff6b6b (vermelho), #27ae60 (verde)
-
-## 🔄 Fluxo de Dados
-
-```
-ProductService (Signals)
-    ↓
-Componentes (recebem via input signals)
-    ↓
-Usuário interage
-    ↓
-Métodos do service atualizam signals
-    ↓
-UI re-renderiza automaticamente
-```
+### Backend
+O backend usa controllers para a camada HTTP, services para regras de negocio e repositories para o PostgreSQL. O `StorageService` encapsula a comunicacao S3 com o RustFS.
 
 ## 📊 Rotas
 
-| Rota | Descrição |
+| Rota | Descricao |
 |------|-----------|
-| `/` | Lista de produtos |
+| `/` | Catalogo de produtos |
 | `/product/:id` | Detalhes do produto |
-| `/cart` | Carrinho de compras |
+| `/cart` | Carrinho e checkout |
+| `/login` | Login |
+| `/register` | Cadastro |
+| `/profile` | Perfil e avatar |
+| `/orders` | Pedidos do usuario |
 
-## 🔐 Boas Práticas Implementadas
+### Endpoints da API
 
-### Angular 22
-✅ Componentes standalone sem módulos  
-✅ Signals para estado reativo  
-✅ Control flow nativo (@if, @for, @switch)  
-✅ Input signal API  
-✅ Lazy loading de rotas (pronto para expansão)  
-✅ Tree-shaking otimizado  
+| Metodo | Endpoint | Descricao |
+|--------|----------|-----------|
+| `GET` | `/api/health` | Verifica se a API esta funcionando |
+| `POST` | `/api/auth/register` | Cria uma conta |
+| `POST` | `/api/auth/login` | Inicia uma sessao |
+| `GET` | `/api/auth/me` | Retorna o usuario autenticado |
+| `POST` | `/api/auth/logout` | Encerra a sessao |
+| `POST` | `/api/profile/avatar` | Envia o avatar do usuario autenticado |
+| `GET` | `/api/profile/avatar/:userId` | Exibe um avatar |
+| `POST` | `/api/orders` | Cria um pedido autenticado |
 
-### Node.js 24 & TypeScript 5.7
-✅ Suporte a recursos JavaScript mais novos  
-✅ TypeScript strict mode habilitado  
-✅ Sem uso de `any` type  
-✅ Type inference quando apropriado  
-✅ Interfaces bem definidas  
+## 🔄 Fluxo de dados
 
-### Acessibilidade
-✅ WCAG AA compliant  
-✅ ARIA labels e roles  
-✅ Keyboard navigation  
-✅ Screen reader friendly  
-✅ Contraste de cores adequado  
+```text
+Usuario interage com o Angular
+        ↓
+Signals atualizam catalogo e carrinho
+        ↓
+AuthService envia requisicoes para a API
+        ↓
+Express valida autenticacao e executa services
+        ↓
+PostgreSQL persiste usuarios e sessoes; a API recebe pedidos e retorna um identificador
+RustFS armazena os avatares
+```
 
-### Performance
-✅ OnPush change detection  
-✅ Lazy loading de imagens  
-✅ Computed signals para valores derivados  
-✅ Minimal bundle size  
-✅ Node 24 com otimizações nativas
+## 📦 Scripts
 
-## 🚀 Próximas Melhorias
+Frontend:
 
-- [ ] Integração com API real
-- [ ] Autenticação de usuário
-- [ ] Persistência de carrinho (localStorage)
-- [ ] Filtros e busca de produtos
-- [ ] Avaliações de produtos
-- [ ] Sistema de pagamento
-- [ ] Página de confirmação de pedido
-- [ ] Dark mode
+```powershell
+npm start       # servidor de desenvolvimento
+npm run build   # build de producao
+npm test        # testes Angular
+npm run lint    # verificacao de lint
+```
 
-## 📝 Licença
+Backend:
 
-Este projeto é fornecido como exemplo educacional.
+```powershell
+npm start             # inicia a API
+npm run dev           # inicia a API com Node watch
+npm run migrate:users # importa usuarios do JSON legado
+```
+
+## 📚 Documentacao complementar
+
+- [Documentacao geral](DOCUMENTATION.md)
+- [Documentacao do backend](backend/README.md)
+- [Documentacao do frontend](frontend/README.md)
+
+## 📝 Licenca
+
+Este projeto e fornecido como exemplo educacional.
 
 ## 👨‍💻 Desenvolvido com
 
 - [Angular 22](https://angular.dev)
 - [Node.js 24](https://nodejs.org)
-- [TypeScript 5.7](https://www.typescriptlang.org)
-- [CSS3](https://www.w3.org/Style/CSS/)
+- [Express 5](https://expressjs.com)
+- [PostgreSQL](https://www.postgresql.org)
+- [RustFS](https://rustfs.com)
 - [Docker](https://www.docker.com)
-
----
-
-**Built with ❤️ using Angular 22 Signals, Node 24, and Docker**

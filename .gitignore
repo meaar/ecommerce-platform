@@ -1,6 +1,11 @@
 # Dependencies
 node_modules/
-package-lock.json
+backend/data/users.json
+postgres-backup.sql
+frontend/node_modules/
+backend/node_modules/
+frontend/dist/
+frontend/.angular/
 yarn.lock
 
 # Production build

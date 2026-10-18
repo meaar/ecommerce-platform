@@ -274,3 +274,4 @@ Este projeto e fornecido como exemplo educacional.
 - [PostgreSQL](https://www.postgresql.org)
 - [RustFS](https://rustfs.com)
 - [Docker](https://www.docker.com)
+- [Nginx](https://nginx.org)

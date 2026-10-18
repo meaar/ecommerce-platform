@@ -1,13 +1,28 @@
 # Frontend
 
-Frontend Angular 22 da loja.
+Frontend da aplicação de e-commerce desenvolvido com Angular 22 e Nginx.
 
-## Scripts
+## Execução
 
-```powershell
+**Desenvolvimento local:**
+```bash
 npm install
 npm start
-npm run build
 ```
 
-A API usada localmente e configurada em `src/environments/environment.ts` como `http://localhost:3000/api`. Em producao, altere essa URL para o endereco publico do backend.
+**Docker — Desenvolvimento:**
+```bash
+docker compose up --build
+```
+
+**Docker — Produção:**
+```bash
+docker compose up --build -d
+```
+
+## Configuração
+
+- `src/environments/environment.ts`: ambiente de desenvolvimento.
+- `src/environments/environment.prod.ts`: ambiente de produção.
+
+Em produção, o Nginx serve o frontend e encaminha as requisições `/api` para o backend.

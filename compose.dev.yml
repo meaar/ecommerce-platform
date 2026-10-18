@@ -1,4 +1,13 @@
 services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: ecommerce-backend-dev
+    volumes:
+      - ./backend:/app
+      - backend-node-modules:/app/node_modules
+
   frontend:
     build:
       context: ./frontend
@@ -9,14 +18,7 @@ services:
     volumes:
       - ./frontend:/app
       - frontend-node-modules:/app/node_modules
-    networks:
-      - ecommerce-net
-    depends_on:
-      - backend
-
-networks:
-  ecommerce-net:
-    external: true
 
 volumes:
+  backend-node-modules:
   frontend-node-modules:

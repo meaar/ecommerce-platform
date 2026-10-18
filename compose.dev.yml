@@ -1,0 +1,22 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: ecommerce-frontend-dev
+    ports: !override
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+      - frontend-node-modules:/app/node_modules
+    networks:
+      - ecommerce-net
+    depends_on:
+      - backend
+
+networks:
+  ecommerce-net:
+    external: true
+
+volumes:
+  frontend-node-modules:

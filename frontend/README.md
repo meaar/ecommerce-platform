@@ -8,7 +8,8 @@ Frontend da aplicação de e-commerce desenvolvido com Angular 22 e Nginx.
 - Catálogo de produtos e detalhes.
 - Carrinho com cálculo do total.
 - Autenticação e gerenciamento de sessão.
-- Perfil com upload de avatar.
+- Perfil com upload de avatar armazenado no bucket `profile-images`.
+- Catálogo com imagens do bucket `product-images` e fallback para a URL original.
 - Checkout e visualização de pedidos.
 - Layout responsivo e navegação acessível.
 
@@ -39,7 +40,10 @@ frontend/
 
 ## Configuração da API
 
-- **Desenvolvimento:** configure o endereço da API em `src/environments/environment.ts`. Por padrão, utiliza `http://localhost:3000/api`. Para acessar o backend em outra máquina, substitua `localhost` pelo IP correspondente.
+- **Desenvolvimento:** `src/environments/environment.ts` usa o mesmo hostname da
+  página e a porta `3000`, permitindo acesso por outro dispositivo na rede local.
+  Por exemplo, ao abrir `http://192.168.0.15:4200`, a API será acessada em
+  `http://192.168.0.15:3000/api`.
 - **Produção:** o Angular utiliza `/api` como endereço da API, e o Nginx encaminha as requisições para o backend, conforme configurado em `nginx.conf`.
 
 ## Scripts

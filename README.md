@@ -39,6 +39,16 @@ Copy-Item backend/.env.example backend/.env
 
 Configure as variáveis necessárias para o banco de dados, o RustFS e a aplicação.
 
+O backend usa buckets separados no RustFS:
+
+```text
+RUSTFS_PROFILE_BUCKET=profile-images
+RUSTFS_PRODUCT_BUCKET=product-images
+```
+
+O bucket `profile-images` armazena avatares e o bucket `product-images` armazena
+imagens do catálogo. Crie os dois buckets no RustFS antes de usar os uploads.
+
 ### Desenvolvimento
 
 Na raiz do projeto, execute:
@@ -77,9 +87,7 @@ docker compose down
 
 ## Endpoints da API
 
-Principais rotas da API, organizadas por recurso.
-
-> Complete esta seção com os métodos HTTP, caminhos e descrições das rotas implementadas no backend.
+As rotas principais estão documentadas na [documentação técnica](DOCUMENTATION.md).
 
 ## Estrutura do projeto
 

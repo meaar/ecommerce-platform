@@ -9,10 +9,10 @@
     }
   </div>
 
-  <section class="hero" aria-label="Destaques">
+  <section class="hero" aria-label="Destaques" aria-live="polite">
     @for (slide of slides; track slide.title; let i = $index) {
       @if (currentSlide() === i) {
-        <div class="hero-slide slide-{{ i }}">
+        <div class="hero-slide slide-{{ i }} hero-slide-{{ slideDirection() }}">
           <div class="hero-copy">
             <span class="eyebrow">{{ slide.eyebrow }}</span>
             <h1>{{ slide.title }}</h1>
@@ -34,8 +34,6 @@
         </div>
       }
     }
-    <button class="carousel-control previous" type="button" (click)="previousSlide()" aria-label="Slide anterior">‹</button>
-    <button class="carousel-control next" type="button" (click)="nextSlide()" aria-label="Próximo slide">›</button>
     <div class="carousel-dots" aria-label="Selecionar destaque">
       @for (slide of slides; track slide.title; let i = $index) {
         <button type="button" [class.active]="currentSlide() === i" (click)="selectSlide(i)" [attr.aria-label]="'Ir para destaque ' + (i + 1)"></button>

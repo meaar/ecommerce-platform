@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ProductService } from '../../services/product.service';
@@ -10,9 +10,11 @@ import { ProductCardComponent } from '../../components/product-card/product-card
   styleUrl: './product-list.component.css',
   imports: [CommonModule, RouterLink, ProductCardComponent]
 })
-export class ProductListComponent {
+export class ProductListComponent implements OnInit, OnDestroy {
   protected readonly productService = inject(ProductService);
   protected readonly currentSlide = signal(0);
+  protected readonly slideDirection = signal<'next' | 'previous'>('next');
+  private autoSlideInterval?: ReturnType<typeof setInterval>;
   protected readonly departments = [
     { icon: '▣', name: 'Hardware', anchor: 'hardware' },
     { icon: '⌨', name: 'Periféricos', anchor: 'perifericos' },
@@ -51,16 +53,42 @@ export class ProductListComponent {
   protected readonly bestSellers = computed(() => this.productService.allProducts().slice(0, 4));
   protected readonly deals = computed(() => this.productService.allProducts().slice(2, 6));
 
-  nextSlide(): void {
-    this.currentSlide.update(index => (index + 1) % this.slides.length);
+  ngOnInit(): void {
+    this.startAutoSlide();
   }
 
-  previousSlide(): void {
-    this.currentSlide.update(index => (index - 1 + this.slides.length) % this.slides.length);
+  ngOnDestroy(): void {
+    this.stopAutoSlide();
+  }
+
+  private startAutoSlide(): void {
+    this.stopAutoSlide();
+    this.autoSlideInterval = setInterval(() => {
+      this.currentSlide.update(index => {
+        const isWrappingToFirst = index === this.slides.length - 1;
+        this.slideDirection.set(isWrappingToFirst ? 'previous' : 'next');
+        return (index + 1) % this.slides.length;
+      });
+    }, 5000);
+  }
+
+  private stopAutoSlide(): void {
+    if (this.autoSlideInterval) {
+      clearInterval(this.autoSlideInterval);
+      this.autoSlideInterval = undefined;
+    }
   }
 
   selectSlide(index: number): void {
+    if (index === this.currentSlide()) {
+      this.startAutoSlide();
+      return;
+    }
+
+    const currentIndex = this.currentSlide();
+    this.slideDirection.set(index > currentIndex ? 'next' : 'previous');
     this.currentSlide.set(index);
+    this.startAutoSlide();
   }
 
   onHeroImageError(event: Event, fallback: string | undefined): void {

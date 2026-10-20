@@ -203,7 +203,7 @@
 .success-message {
   padding: 1rem;
   background-color: var(--color-success-surface);
-  color: #155724;
+  color: var(--color-success);
   border-radius: 4px;
   text-align: center;
   font-weight: 600;

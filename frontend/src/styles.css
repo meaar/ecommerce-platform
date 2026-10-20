@@ -15,11 +15,15 @@
   --color-heading: #0f172a;
   --color-text-muted: #526174;
   --color-text-subtle: #64748b;
+  --color-menu-label: #7a8798;
   --color-border: #e2e8f0;
   --color-border-strong: #cbd5e1;
   --color-primary: #2563eb;
   --color-primary-hover: #1d4ed8;
+  --color-subcategory: #526174;
+  --color-subcategory-hover: #1664a3;
   --color-accent: #f8b84e;
+  --color-accent-hover: #ffd17d;
   --color-accent-soft: #fff3d9;
   --color-success: #15803d;
   --color-success-surface: #dcfce7;
@@ -32,6 +36,34 @@
   --color-on-header: #ffffff;
   --color-header-control-bg: rgba(255, 255, 255, .08);
   --color-header-control-border: rgba(255, 255, 255, .2);
+  --color-nav-item: #d6deea;
+  --color-nav-item-hover: #f8b84e;
+  --color-menu-surface: #ffffff;
+  --color-menu-sidebar: #f3f6fa;
+  --color-menu-border: #dce3ec;
+  --color-menu-icon: #bf7010;
+  --color-menu-arrow: #9aa8b8;
+  --color-on-accent: #162238;
+  --color-hero-text: #dbe6f2;
+  --color-offer-text: #d8e4ef;
+  --color-danger-text: #9f2d22;
+  --color-danger-border: #f0c4be;
+  --color-link: #1664a3;
+  --color-link-hover: #1d4ed8;
+  --color-control-surface: #f1f5f9;
+  --color-control-surface-hover: #e2e8f0;
+  --color-avatar-surface: #dbeafe;
+  --color-hero-control-bg: rgba(10, 20, 38, .3);
+  --color-hero-control-hover: rgba(10, 20, 38, .7);
+  --color-hero-dot: rgba(255, 255, 255, .45);
+  --color-hero-orb: rgba(248, 184, 78, .16);
+  --color-hero-slide-one: #17233b;
+  --color-hero-slide-two: #2b4b68;
+  --color-hero-slide-three: #261d39;
+  --color-hero-slide-four: #4c2d54;
+  --color-hero-slide-five: #14546a;
+  --color-offer-start: #162238;
+  --color-offer-end: #254b69;
   --shadow-card: 0 2px 8px rgba(15, 23, 42, .1);
 }
 
@@ -85,11 +117,15 @@ body.dark-mode {
   --color-heading: #f8fafc;
   --color-text-muted: #c0ccda;
   --color-text-subtle: #a9b7c8;
+  --color-menu-label: #a9b7c8;
   --color-border: #3b4b63;
   --color-border-strong: #53657e;
   --color-primary: #60a5fa;
   --color-primary-hover: #93c5fd;
+  --color-subcategory: #f1f5f9;
+  --color-subcategory-hover: #93c5fd;
   --color-accent: #f8c15c;
+  --color-accent-hover: #fbd98a;
   --color-accent-soft: #493a1f;
   --color-success: #86efac;
   --color-success-surface: #16452c;
@@ -102,6 +138,34 @@ body.dark-mode {
   --color-on-header: #f8fafc;
   --color-header-control-bg: rgba(255, 255, 255, .08);
   --color-header-control-border: rgba(255, 255, 255, .2);
+  --color-nav-item: #e2e8f0;
+  --color-nav-item-hover: #f8c15c;
+  --color-menu-surface: #182235;
+  --color-menu-sidebar: #172235;
+  --color-menu-border: #3b4b63;
+  --color-menu-icon: #f8c15c;
+  --color-menu-arrow: #a9b7c8;
+  --color-on-accent: #0f172a;
+  --color-hero-text: #e2e8f0;
+  --color-offer-text: #d8e4ef;
+  --color-danger-text: #fca5a5;
+  --color-danger-border: #7f1d1d;
+  --color-link: #93c5fd;
+  --color-link-hover: #bfdbfe;
+  --color-control-surface: #374151;
+  --color-control-surface-hover: #4b5563;
+  --color-avatar-surface: #1e3a8a;
+  --color-hero-control-bg: rgba(10, 20, 38, .55);
+  --color-hero-control-hover: rgba(10, 20, 38, .85);
+  --color-hero-dot: rgba(255, 255, 255, .65);
+  --color-hero-orb: rgba(248, 193, 92, .18);
+  --color-hero-slide-one: #17233b;
+  --color-hero-slide-two: #2b4b68;
+  --color-hero-slide-three: #261d39;
+  --color-hero-slide-four: #4c2d54;
+  --color-hero-slide-five: #14546a;
+  --color-offer-start: #111827;
+  --color-offer-end: #1f4664;
   --shadow-card: 0 8px 24px rgba(0, 0, 0, .24);
   color: var(--color-text);
   background-color: var(--color-page-bg);
@@ -139,9 +203,9 @@ body.dark-mode .empty-orders {
 
 body.dark-mode .catalog-message { color: var(--color-text-muted); }
 body.dark-mode .catalog-error {
-  color: #fca5a5;
-  background: #3a2024;
-  border-color: #7f1d1d;
+  color: var(--color-danger);
+  background: var(--color-danger-surface);
+  border-color: var(--color-danger-border);
 }
 body.dark-mode .department-card,
 body.dark-mode .product-name,
@@ -160,13 +224,13 @@ body.dark-mode .subtotal,
 body.dark-mode .profile-card h1,
 body.dark-mode .orders-page h1,
 body.dark-mode .empty-orders h2 {
-  color: #f8fafc;
+  color: var(--color-heading);
 }
 body.dark-mode .department-icon { background: var(--color-accent-soft); color: var(--color-accent); }
 body.dark-mode .section-heading a,
 body.dark-mode .breadcrumb a,
 body.dark-mode .back-link,
-body.dark-mode .btn-continue-shopping { color: #7dd3fc; }
+body.dark-mode .btn-continue-shopping { color: var(--color-link); }
 body.dark-mode .section-heading a:hover,
 body.dark-mode .back-link:hover { color: var(--color-accent); }
 body.dark-mode .category,
@@ -181,39 +245,38 @@ body.dark-mode .switch,
 body.dark-mode .hint,
 body.dark-mode .orders-heading p:last-child,
 body.dark-mode .empty-orders p,
-body.dark-mode .price { color: #94a3b8; }
+body.dark-mode .price { color: var(--color-text-subtle); }
 body.dark-mode .rating { background-color: var(--color-surface); }
 body.dark-mode .stock,
 body.dark-mode .price-section { background-color: var(--color-surface-subtle); }
 body.dark-mode .main-image,
 body.dark-mode .image-container,
-body.dark-mode .product-thumbnail { background-color: #273449; }
+body.dark-mode .product-thumbnail { background-color: var(--color-surface-subtle); }
 body.dark-mode .quantity-selector,
 body.dark-mode .quantity-selector button,
-body.dark-mode .btn-view { background-color: #374151; }
-body.dark-mode .quantity-selector button { color: #e5e7eb; }
+body.dark-mode .btn-view { background-color: var(--color-control-surface); }
+body.dark-mode .quantity-selector button { color: var(--color-text); }
 body.dark-mode .quantity-selector button:hover:not(:disabled),
-body.dark-mode .btn-view:hover { background-color: #4b5563; }
-body.dark-mode .btn-view { color: #e5e7eb; border-color: #4b5563; }
-body.dark-mode .cart-table thead { background-color: #273449; border-color: #475569; }
-body.dark-mode .summary-row { border-color: #374151; }
+body.dark-mode .btn-view:hover { background-color: var(--color-control-surface-hover); }
+body.dark-mode .btn-view { color: var(--color-text); border-color: var(--color-border-strong); }
+body.dark-mode .cart-table thead { background-color: var(--color-surface-subtle); border-color: var(--color-border-strong); }
+body.dark-mode .summary-row { border-color: var(--color-border); }
 body.dark-mode .summary-row.total { border-color: var(--color-text-subtle); }
-body.dark-mode .cart-item { border-color: #374151; }
-body.dark-mode .cart-item:hover { background-color: #273449; }
+body.dark-mode .cart-item { border-color: var(--color-border); }
+body.dark-mode .cart-item:hover { background-color: var(--color-surface-subtle); }
 body.dark-mode .auth-card,
 body.dark-mode .profile-card,
 body.dark-mode .empty-orders { box-shadow: 0 16px 40px rgba(0, 0, 0, .25); }
-body.dark-mode .file-picker { color: #93c5fd; border-color: #60a5fa; }
-body.dark-mode .success-message { color: #bbf7d0; background-color: #14532d; }
-body.dark-mode .error { color: #fca5a5; }
-body.dark-mode .department-sidebar { background: #172235; }
-body.dark-mode .department-sidebar button { color: var(--color-border-strong); }
+body.dark-mode .file-picker { color: var(--color-primary); border-color: var(--color-primary); }
+body.dark-mode .success-message { color: var(--color-success); background-color: var(--color-success-surface); }
+body.dark-mode .error { color: var(--color-danger); }
+body.dark-mode .department-sidebar { background: var(--color-menu-sidebar); }
+body.dark-mode .department-sidebar button { color: var(--color-text); }
 body.dark-mode .department-sidebar button:hover,
 body.dark-mode .department-sidebar button.active {
-  color: #f8fafc;
-  background: #273449;
+  color: var(--color-heading);
+  background: var(--color-surface-subtle);
 }
-body.dark-mode .department-content-heading { border-color: #374151; }
+body.dark-mode .department-content-heading { border-color: var(--color-border); }
 body.dark-mode .department-content-heading h2,
-body.dark-mode .subcategory-group .subcategory-title { color: #f8fafc; }
-body.dark-mode .subcategory-group a { color: #a8b3c2; }
+body.dark-mode .subcategory-group .subcategory-title { color: var(--color-heading); }

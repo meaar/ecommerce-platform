@@ -160,8 +160,8 @@
 }
 
 .cart-badge {
-  background-color: #e85d4a;
-  color: white;
+  background-color: var(--color-danger);
+  color: var(--color-on-brand);
   border-radius: 50%;
   width: 24px;
   height: 24px;
@@ -208,7 +208,7 @@
   gap: .55rem;
   padding: 0;
   border: 0;
-  color: var(--color-on-header);
+  color: var(--color-nav-item);
   background: transparent;
   font: inherit;
   font-size: .85rem;
@@ -218,7 +218,7 @@
 
 .category-trigger:hover,
 .departments-menu.is-open .category-trigger {
-  color: var(--color-accent);
+  color: var(--color-nav-item-hover);
 }
 
 .category-trigger-icon {
@@ -245,9 +245,9 @@
   width: min(900px, calc(100vw - 2rem));
   min-height: 360px;
   overflow: hidden;
-  border: 1px solid #dce3ec;
+  border: 1px solid var(--color-menu-border);
   border-radius: 0 0 10px 10px;
-  background: var(--color-surface);
+  background: var(--color-menu-surface);
   box-shadow: 0 18px 40px rgba(15, 23, 42, .2);
   opacity: 0;
   pointer-events: none;
@@ -268,13 +268,13 @@
   flex-direction: column;
   gap: .15rem;
   padding: 1.25rem .8rem;
-  background: #f3f6fa;
+  background: var(--color-menu-sidebar);
 }
 
 .dropdown-overline {
   display: block;
   margin-bottom: .55rem;
-  color: #7a8798;
+  color: var(--color-menu-label);
   font-size: .65rem;
   font-weight: 800;
   letter-spacing: .1em;
@@ -307,12 +307,12 @@
 .department-sidebar button > span {
   display: grid;
   place-items: center;
-  color: #bf7010;
+  color: var(--color-menu-icon);
   font-size: 1.05rem;
 }
 
 .department-sidebar button strong {
-  color: #9aa8b8;
+  color: var(--color-menu-arrow);
   font-size: 1.1rem;
   font-weight: 400;
 }
@@ -327,7 +327,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding-bottom: .85rem;
-  border-bottom: 1px solid #e7edf3;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .department-content-heading h2 {
@@ -337,14 +337,15 @@
 }
 
 .department-content-heading a {
-  color: #1664a3;
-  font-size: .78rem;
+  color: var(--color-heading);
+  font-size: .85rem;
   font-weight: 700;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 
 .department-content-heading a:hover {
-  color: #bf7010;
+  color: var(--color-heading);
+  text-decoration: none !important;
 }
 
 .subcategory-grid {
@@ -361,14 +362,14 @@
   gap: .35rem;
 }
 
-.subcategory-group a {
-  color: #657286;
+.subcategory-group .subcategory-item {
+  color: var(--color-subcategory);
   font-size: .78rem;
   text-decoration: none;
 }
 
-.subcategory-group a:hover {
-  color: #1664a3;
+.subcategory-group .subcategory-item:hover {
+  color: var(--color-subcategory-hover);
 }
 
 .subcategory-group .subcategory-title {
@@ -376,6 +377,7 @@
   color: var(--color-heading);
   font-size: .86rem;
   font-weight: 800;
+  text-decoration: none;
 }
 
 .subcategory-group .subcategory-title::after {
@@ -387,18 +389,19 @@
   background: var(--color-accent);
 }
 
-.category-nav a {
-  color: #d6deea;
+.category-nav-inner > a {
+  color: var(--color-nav-item);
   font-size: .85rem;
+  font-weight: 700;
   text-decoration: none;
 }
 
-.category-nav a:hover {
-  color: var(--color-accent);
+.category-nav-inner > a:hover {
+  color: var(--color-nav-item-hover);
 }
 
 .category-label {
-  color: #fff;
+  color: var(--color-on-header);
   font-weight: 700;
 }
 
@@ -455,7 +458,7 @@
   overflow: hidden;
   border-radius: 50%;
   color: var(--color-heading);
-  background: #66d9ff;
+  background: var(--color-avatar-surface);
   font-size: .9rem;
   font-weight: 800;
 }

@@ -132,7 +132,7 @@
                       {{ group.name }}
                     </a>
                     @for (item of group.items; track item) {
-                      <a [routerLink]="['/']" [fragment]="group.anchor" (click)="closeDepartmentsMenu()">{{ item }}</a>
+                      <a class="subcategory-item" [routerLink]="['/']" [fragment]="group.anchor" (click)="closeDepartmentsMenu()">{{ item }}</a>
                     }
                   </section>
                 }

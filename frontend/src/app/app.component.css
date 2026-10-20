@@ -1,3 +1,9 @@
+:host {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
 .header {
   background: var(--color-header);
   color: var(--color-on-header);
@@ -549,10 +555,11 @@
 }
 
 .main-content {
+  flex: 1 0 auto;
   max-width: 1200px;
-  margin: 2rem auto;
+  width: 100%;
+  margin: 2rem auto 0;
   padding: 8rem 1rem 0;
-  min-height: calc(100vh - 200px);
 }
 
 .footer {
@@ -560,7 +567,6 @@
   color: var(--color-on-header);
   text-align: center;
   padding: 2rem;
-  margin-top: 4rem;
 }
 
 .footer p {

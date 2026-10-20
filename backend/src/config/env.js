@@ -11,6 +11,10 @@ const env = Object.freeze({
     secureCookie: process.env.NODE_ENV === 'production',
   }),
   frontendOrigin: process.env.FRONTEND_ORIGIN || 'http://localhost:4200',
+  allowedFrontendOrigins: Object.freeze((process.env.FRONTEND_ORIGINS || process.env.FRONTEND_ORIGIN || 'http://localhost:4200')
+    .split(',')
+    .map(origin => origin.trim())
+    .filter(Boolean)),
   database: Object.freeze({
     host: process.env.POSTGRES_HOST || 'localhost',
     port: getPositiveInteger(process.env.POSTGRES_PORT, 5432),

@@ -1,14 +1,101 @@
-<section class="products-section">
-  <header>
-    <h1>{{ title }}</h1>
-    <p class="subtitle">Discover our collection of premium tech products</p>
-  </header>
-
-  <div class="products-grid">
-    @for (product of productService.allProducts(); track product.id) {
-      <app-product-card [product]="product"></app-product-card>
-    } @empty {
-      <p class="empty-message">No products available</p>
+<section class="home-page">
+  <div class="department-grid" aria-label="Departamentos em destaque">
+    @for (department of departments; track department.name) {
+      <a class="department-card" [id]="department.anchor" [routerLink]="['/']" [fragment]="department.anchor">
+        <span class="department-icon">{{ department.icon }}</span>
+        <span>{{ department.name }}</span>
+        <span class="department-arrow" aria-hidden="true">→</span>
+      </a>
     }
   </div>
+
+  <section class="hero" aria-label="Destaques">
+    @for (slide of slides; track slide.title; let i = $index) {
+      @if (currentSlide() === i) {
+        <div class="hero-slide slide-{{ i }}">
+          <div class="hero-copy">
+            <span class="eyebrow">{{ slide.eyebrow }}</span>
+            <h1>{{ slide.title }}</h1>
+            <p>{{ slide.description }}</p>
+            <a class="hero-action" [routerLink]="['/product', slide.productId]">
+              {{ slide.action }} <span aria-hidden="true">→</span>
+            </a>
+          </div>
+          <div class="hero-product">
+            <span class="hero-badge">{{ slide.accent }}</span>
+            <img [src]="productService.getProductById(slide.productId)?.image" alt="" width="300" height="220">
+          </div>
+        </div>
+      }
+    }
+    <button class="carousel-control previous" type="button" (click)="previousSlide()" aria-label="Slide anterior">‹</button>
+    <button class="carousel-control next" type="button" (click)="nextSlide()" aria-label="Próximo slide">›</button>
+    <div class="carousel-dots" aria-label="Selecionar destaque">
+      @for (slide of slides; track slide.title; let i = $index) {
+        <button type="button" [class.active]="currentSlide() === i" (click)="selectSlide(i)" [attr.aria-label]="'Ir para destaque ' + (i + 1)"></button>
+      }
+    </div>
+  </section>
+
+  @if (productService.loading()) {
+    <p class="catalog-message">Carregando produtos...</p>
+  } @else if (productService.loadError(); as error) {
+    <div class="catalog-message catalog-error">
+      <p>{{ error }}</p>
+      <button type="button" (click)="productService.loadProducts()">Tentar novamente</button>
+    </div>
+  } @else {
+  <section class="product-section" id="mais-vendidos">
+    <div class="section-heading">
+      <div>
+        <span class="section-kicker">Escolhas da comunidade</span>
+        <h2>Mais vendidos</h2>
+      </div>
+      <a [routerLink]="['/']" fragment="todos-produtos">Ver todos <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="products-grid">
+      @for (product of bestSellers(); track product.id) {
+        <app-product-card [product]="product"></app-product-card>
+      }
+    </div>
+  </section>
+
+  <section class="offer-strip" id="ofertas">
+    <div>
+      <span class="section-kicker">Preço baixo de verdade</span>
+      <h2>Ofertas para renovar seu setup</h2>
+      <p>Condições especiais por tempo limitado.</p>
+    </div>
+    <a class="offer-action" [routerLink]="['/']" fragment="promocoes">Confira as ofertas <span>→</span></a>
+  </section>
+
+  <section class="product-section" id="promocoes">
+    <div class="section-heading">
+      <div>
+        <span class="section-kicker">Só hoje</span>
+        <h2>Promoções em destaque</h2>
+      </div>
+      <a [routerLink]="['/']" fragment="todos-produtos">Explorar ofertas <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="products-grid">
+      @for (product of deals(); track product.id) {
+        <app-product-card [product]="product"></app-product-card>
+      }
+    </div>
+  </section>
+
+  <section class="all-products product-section" id="todos-produtos">
+    <div class="section-heading">
+      <div>
+        <span class="section-kicker">Explore a loja</span>
+        <h2>Todos os produtos</h2>
+      </div>
+    </div>
+    <div class="products-grid">
+      @for (product of productService.allProducts(); track product.id) {
+        <app-product-card [product]="product"></app-product-card>
+      }
+    </div>
+  </section>
+  }
 </section>

@@ -1,18 +1,18 @@
 import { ChangeDetectionStrategy, Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { NgOptimizedImage } from '@angular/common';
 import { ProductService, Product } from '../../services/product.service';
 
 @Component({
   selector: 'app-product-detail',
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.css',
-  imports: [CommonModule, RouterLink, NgOptimizedImage],
+  imports: [CommonModule, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductDetailComponent {
   protected readonly product = signal<Product | undefined>(undefined);
+  protected readonly loading = signal(true);
   protected readonly quantity = signal(1);
   protected readonly addedToCart = signal(false);
 
@@ -22,8 +22,18 @@ export class ProductDetailComponent {
   constructor() {
     this.route.params.subscribe(params => {
       const productId = params['id'];
-      const foundProduct = this.productService.getProductById(productId);
-      this.product.set(foundProduct);
+      this.loading.set(true);
+      this.productService.getProductByIdFromApi(productId).subscribe({
+        next: foundProduct => {
+          this.product.set(foundProduct);
+          this.loading.set(false);
+        },
+        error: error => {
+          console.error('Unable to load product:', error);
+          this.product.set(undefined);
+          this.loading.set(false);
+        },
+      });
     });
   }
 

@@ -1,5 +1,7 @@
-import { Injectable, inject } from '@angular/core';
-import { signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { catchError, Observable, of } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Product {
   id: string;
@@ -21,72 +23,13 @@ export interface CartItem {
   providedIn: 'root'
 })
 export class ProductService {
-  private readonly products = signal<Product[]>([
-    {
-      id: '1',
-      name: 'Laptop Pro',
-      price: 1299.99,
-      description: 'High-performance laptop for professionals',
-      image: 'https://via.placeholder.com/300x200?text=Laptop+Pro',
-      category: 'Electronics',
-      rating: 4.8,
-      stock: 15
-    },
-    {
-      id: '2',
-      name: 'Wireless Headphones',
-      price: 199.99,
-      description: 'Premium noise-cancelling headphones',
-      image: 'https://via.placeholder.com/300x200?text=Headphones',
-      category: 'Electronics',
-      rating: 4.6,
-      stock: 42
-    },
-    {
-      id: '3',
-      name: 'Mechanical Keyboard',
-      price: 149.99,
-      description: 'RGB mechanical keyboard with custom switches',
-      image: 'https://via.placeholder.com/300x200?text=Keyboard',
-      category: 'Accessories',
-      rating: 4.7,
-      stock: 28
-    },
-    {
-      id: '4',
-      name: 'USB-C Cable',
-      price: 19.99,
-      description: 'High-speed USB-C charging and data cable',
-      image: 'https://via.placeholder.com/300x200?text=USB+Cable',
-      category: 'Cables',
-      rating: 4.4,
-      stock: 150
-    },
-    {
-      id: '5',
-      name: '4K Monitor',
-      price: 599.99,
-      description: '27-inch 4K ultra HD monitor',
-      image: 'https://via.placeholder.com/300x200?text=Monitor',
-      category: 'Electronics',
-      rating: 4.9,
-      stock: 8
-    },
-    {
-      id: '6',
-      name: 'Mouse Pad',
-      price: 29.99,
-      description: 'Large extended gaming mouse pad',
-      image: 'https://via.placeholder.com/300x200?text=Mouse+Pad',
-      category: 'Accessories',
-      rating: 4.3,
-      stock: 60
-    }
-  ]);
-
+  private readonly http = inject(HttpClient);
+  private readonly products = signal<Product[]>([]);
   private readonly cart = signal<CartItem[]>([]);
 
   readonly allProducts = this.products.asReadonly();
+  readonly loading = signal(true);
+  readonly loadError = signal<string | null>(null);
   readonly cartItems = this.cart.asReadonly();
   readonly cartTotal = computed(() =>
     this.cart().reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
@@ -95,8 +38,32 @@ export class ProductService {
     this.cart().reduce((sum, item) => sum + item.quantity, 0)
   );
 
+  constructor() {
+    this.loadProducts();
+  }
+
+  loadProducts(): void {
+    this.loading.set(true);
+    this.loadError.set(null);
+    this.http.get<Product[]>(`${environment.apiUrl}/products`).pipe(
+      catchError(error => {
+        console.error('Unable to load products:', error);
+        this.loading.set(false);
+        this.loadError.set('Nao foi possivel carregar os produtos.');
+        return of([]);
+      }),
+    ).subscribe(products => {
+      this.products.set(products);
+      this.loading.set(false);
+    });
+  }
+
   getProductById(id: string): Product | undefined {
     return this.products().find(p => p.id === id);
+  }
+
+  getProductByIdFromApi(id: string): Observable<Product> {
+    return this.http.get<Product>(`${environment.apiUrl}/products/${encodeURIComponent(id)}`);
   }
 
   addToCart(product: Product, quantity: number = 1): void {

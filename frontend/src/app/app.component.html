@@ -1,19 +1,23 @@
 <header class="header">
   <div class="header-container">
-    <h1 class="logo">
-      <a [routerLink]="['/']">{{ title }}</a>
-    </h1>
-    
-    <nav class="nav-menu" role="navigation" aria-label="Main navigation">
+    <a class="logo" [routerLink]="['/']" aria-label="E-commerce início">
+      <span class="logo-mark" aria-hidden="true">E</span>
+      <span>{{ title }}</span>
+    </a>
+
+    <form class="search-bar" role="search" (submit)="$event.preventDefault()">
+      <label class="sr-only" for="site-search">Buscar produtos</label>
+      <input id="site-search" type="search" placeholder="Busque por produtos, marcas e categorias">
+      <button type="submit" aria-label="Buscar">&#128269;</button>
+    </form>
+
+    <nav class="nav-menu" role="navigation" aria-label="Navegação principal">
       <ul>
         <li>
-          <a [routerLink]="['/']" routerLinkActive="active" routerLinkActiveOptions="{ exact: true }">
-            Home
-          </a>
-        </li>
-        <li>
-          <a [routerLink]="['/cart']" routerLinkActive="active">
-            Cart <span class="cart-badge" aria-label="Items in cart: {{ productService.cartItemCount() }}">
+          <a [routerLink]="['/cart']" routerLinkActive="active" class="cart-link" aria-label="Carrinho">
+            <span class="nav-icon">&#128722;</span>
+            <span class="cart-label">Carrinho</span>
+            <span class="cart-badge" aria-label="Itens no carrinho: {{ productService.cartItemCount() }}">
               {{ productService.cartItemCount() }}
             </span>
           </a>
@@ -56,10 +60,78 @@
             </div>
           </li>
         } @else {
-          <li><a [routerLink]="['/login']" routerLinkActive="active">Entrar</a></li>
+          <li><a [routerLink]="['/login']" routerLinkActive="active"><span class="nav-icon">&#128100;</span> Entrar</a></li>
         }
       </ul>
     </nav>
+  </div>
+  <div class="category-nav">
+    <div class="category-nav-inner">
+      <div
+        class="departments-menu"
+        [class.is-open]="departmentsMenuOpen"
+        [class.is-dismissed]="departmentsMenuDismissed"
+        (mouseenter)="onDepartmentsMenuEnter()"
+        (mouseleave)="onDepartmentsMenuLeave()"
+      >
+        <button
+          type="button"
+          class="category-trigger"
+          [attr.aria-expanded]="departmentsMenuOpen"
+          aria-controls="departments-dropdown"
+          (click)="toggleDepartmentsMenu($event)"
+        >
+          <span class="category-trigger-icon">&#9776;</span>
+          Departamentos
+          <span class="category-trigger-chevron" aria-hidden="true">&#9662;</span>
+        </button>
+
+        <div id="departments-dropdown" class="departments-dropdown" role="menu">
+          <div class="department-sidebar">
+            <span class="dropdown-overline">Compre por categoria</span>
+            @for (department of departmentCategories; track department.name; let i = $index) {
+              <button
+                type="button"
+                [class.active]="activeDepartment === i"
+                (mouseenter)="selectDepartment(i)"
+                (focus)="selectDepartment(i)"
+                (click)="selectDepartment(i)"
+              >
+                <span>{{ department.icon }}</span>
+                {{ department.name }}
+                <strong aria-hidden="true">›</strong>
+              </button>
+            }
+          </div>
+
+          <div class="department-content">
+            @if (departmentCategories[activeDepartment]; as department) {
+              <div class="department-content-heading">
+                <div>
+                  <span class="dropdown-overline">Departamento</span>
+                  <h2>{{ department.name }}</h2>
+                </div>
+                <a [routerLink]="['/']" [fragment]="department.anchor" (click)="closeDepartmentsMenu()">Ver tudo em {{ department.name }} <span aria-hidden="true">→</span></a>
+              </div>
+              <div class="subcategory-grid">
+                @for (group of department.groups; track group.name) {
+                  <section class="subcategory-group">
+                    <a class="subcategory-title" [routerLink]="['/']" [fragment]="group.anchor" (click)="closeDepartmentsMenu()">
+                      {{ group.name }}
+                    </a>
+                    @for (item of group.items; track item) {
+                      <a [routerLink]="['/']" [fragment]="group.anchor" (click)="closeDepartmentsMenu()">{{ item }}</a>
+                    }
+                  </section>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+      <a [routerLink]="['/']" fragment="mais-vendidos">Mais vendidos</a>
+      <a [routerLink]="['/']" fragment="ofertas">Ofertas do dia</a>
+    </div>
   </div>
 </header>
 

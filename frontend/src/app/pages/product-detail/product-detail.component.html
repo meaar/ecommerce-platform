@@ -1,4 +1,8 @@
-@if (product(); as prod) {
+@if (loading()) {
+  <div class="not-found">
+    <p>Carregando produto...</p>
+  </div>
+} @else if (product(); as prod) {
   <div class="product-detail">
     <div class="breadcrumb">
       <a [routerLink]="['/']">Home</a>
@@ -9,7 +13,7 @@
     <div class="container">
       <div class="image-section">
         <img
-          ngSrc="prod.image"
+          [src]="prod.image"
           [alt]="prod.name"
           class="main-image"
           width="500"

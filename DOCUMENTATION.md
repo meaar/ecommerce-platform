@@ -1,112 +1,212 @@
-# Documentacao tecnica da aplicacao
+# Documentacao tecnica
 
-Este arquivo registra as decisoes tecnicas e os limites atuais da plataforma. Para instalar, executar ou publicar o projeto, consulte o [README principal](README.md).
+Este documento descreve a arquitetura, o banco de dados e os fluxos principais da
+aplicacao. As instrucoes de instalacao e execucao ficam no [README principal](README.md).
 
 ## Arquitetura
 
-O projeto e dividido em dois aplicativos independentes:
+O projeto possui dois aplicativos:
 
-- `frontend/`: aplicacao Angular 22 executada no navegador.
-- `backend/`: API REST Node.js 24 com Express 5.
+- `frontend/`: aplicacao Angular 22.
+- `backend/`: API REST com Node.js 24 e Express 5.
 
-A infraestrutura conteinerizada usa:
+Servicos utilizados:
 
-- PostgreSQL 18 para usuarios e sessoes.
-- RustFS para armazenamento de avatares via SDK S3.
-- Nginx para servir o build estatico do frontend.
-- Docker Compose para orquestrar PostgreSQL, backend e frontend.
+- PostgreSQL 18: usuarios, sessoes e produtos.
+- RustFS: armazenamento dos avatares, compativel com S3.
+- Nginx: servidor do frontend em producao e proxy da API.
+- Docker Compose: orquestracao dos servicos.
 
-O RustFS nao e criado pelo `docker-compose.yml`. Ele deve existir previamente e ser conectado a rede externa `ecommerce-net`.
+O RustFS precisa existir previamente e estar conectado a rede externa
+`ecommerce-net`. Ele nao e criado pelos arquivos Compose deste projeto.
 
 ## Backend
 
-O ponto de entrada e `backend/index.js`. A composicao da aplicacao fica em `backend/src/app.js` e as dependencias compartilhadas sao criadas por `backend/src/container.js`.
+O backend inicia em `backend/index.js`. A aplicacao e montada em
+`backend/src/app.js` e as dependencias sao registradas em
+`backend/src/container.js`.
 
-Responsabilidades das camadas:
+Camadas:
 
-- `routes`: define os caminhos HTTP e associa middlewares aos controllers.
-- `controllers`: interpreta requisicoes e monta respostas HTTP.
-- `services`: concentra regras de negocio e integracoes externas.
-- `repositories`: encapsula o acesso ao PostgreSQL.
-- `middlewares`: autenticacao, upload, rate limit e tratamento de erros.
-- `utils`: funcoes reutilizaveis sem estado.
+- `routes`: caminhos HTTP e middlewares.
+- `controllers`: entrada e saida das requisicoes.
+- `services`: regras de negocio.
+- `repositories`: acesso ao PostgreSQL.
+- `middlewares`: autenticacao, upload, limite de requisicoes e erros.
 
-Na inicializacao, o backend cria as tabelas `users` e `sessions` caso elas ainda nao existam. O `UserRepository` usa queries parametrizadas.
+As tabelas necessarias sao criadas automaticamente na inicializacao. As consultas ao
+banco usam parametros para evitar concatenacao de dados recebidos pela API.
 
-## Autenticacao e sessoes
+## Banco de dados
 
-O cadastro e o login criam uma sessao persistida no PostgreSQL. O identificador da sessao e enviado em cookie `HttpOnly`, com `SameSite=Lax` e validade de sete dias. O token nao fica disponivel para o JavaScript do frontend.
+O PostgreSQL e executado pelo servico `postgres`. O volume `postgres-data-v18`
+preserva os dados quando os containers sao recriados.
 
-As rotas protegidas usam o middleware de autenticacao para validar o cookie e carregar o usuario atual. O frontend restaura a sessao com `GET /api/auth/me`.
+### Tabela `users`
 
-## Upload de avatar
+Armazena as contas:
 
-O fluxo de upload e:
+- `id`: UUID do usuario.
+- `name`: nome.
+- `email`: email unico.
+- `password_hash`: hash da senha; a senha original nao e armazenada.
+- `avatar_key`: referencia do avatar no RustFS.
+- `created_at`: data de cadastro.
+
+### Tabela `sessions`
+
+Armazena as sessoes de autenticacao:
+
+- `id`: identificador da sessao.
+- `user_id`: referencia para `users.id`.
+- `token_hash`: hash do token do cookie.
+- `expires_at`: validade da sessao.
+- `created_at`: data de criacao.
+
+O token original fica em um cookie `HttpOnly`; apenas seu hash e salvo no banco.
+As sessoes sao removidas quando o usuario relacionado e excluido.
+
+### Tabela `products`
+
+Armazena o catalogo:
+
+- `id`: identificador.
+- `name`: nome.
+- `price`: preco.
+- `description`: descricao.
+- `image`: URL da imagem.
+- `category`: categoria.
+- `rating`: avaliacao entre 0 e 5.
+- `stock`: quantidade disponivel.
+
+Na primeira inicializacao, o `ProductRepository` insere os produtos de exemplo que ainda
+nao existem. Registros ja existentes nao sao sobrescritos.
+
+### Dados que ainda nao sao persistidos
+
+O carrinho fica em memoria no frontend e e perdido ao atualizar ou fechar a pagina.
+
+Pedidos ainda nao possuem as tabelas `orders` e `order_items`. Atualmente
+`POST /api/orders` valida o carrinho e gera um identificador em memoria, mas nao grava
+historico, nao baixa estoque e nao salva o valor final da compra.
+
+## API
+
+Principais endpoints:
+
+| Metodo | Rota | Autenticacao | Funcao |
+|---|---|---|---|
+| `GET` | `/api/health` | Nao | Verifica a API |
+| `POST` | `/api/auth/register` | Nao | Cria uma conta |
+| `POST` | `/api/auth/login` | Nao | Inicia uma sessao |
+| `GET` | `/api/auth/me` | Sim | Retorna o usuario atual |
+| `POST` | `/api/auth/logout` | Nao | Encerra a sessao |
+| `GET` | `/api/products` | Nao | Lista os produtos |
+| `GET` | `/api/products/:id` | Nao | Retorna um produto |
+| `POST` | `/api/profile/avatar` | Sim | Envia um avatar |
+| `GET` | `/api/profile/avatar/:userId` | Nao | Exibe um avatar |
+| `POST` | `/api/orders` | Sim | Recebe o carrinho atual |
+
+O catalogo segue este fluxo:
 
 ```text
-frontend -> POST /api/profile/avatar -> backend -> RustFS
+Angular ProductService
+        |
+        v
+GET /api/products
+        |
+        v
+ProductController
+        |
+        v
+ProductRepository
+        |
+        v
+PostgreSQL
 ```
 
-O backend valida o arquivo recebido, grava o objeto no bucket configurado em `RUSTFS_BUCKET` e atualiza a referencia do avatar do usuario. As credenciais do RustFS ficam somente no ambiente do backend.
+## Autenticacao
 
-O endpoint `GET /api/profile/avatar/:userId` faz o streaming do objeto para o navegador. O arquivo original `backend/data/users.json` nao e lido pela aplicacao normal.
+Cadastro e login criam uma sessao no PostgreSQL. O identificador da sessao e enviado
+em cookie `HttpOnly`, com `SameSite=Lax` e validade de sete dias.
 
-## Pedidos
-
-A rota `POST /api/orders` exige autenticacao, valida se existem itens no carrinho e retorna um identificador de pedido e a quantidade de itens recebida. No estado atual, pedidos ainda nao possuem repository ou tabela propria no PostgreSQL; o `orderId` e gerado em memoria.
+As rotas protegidas validam o cookie antes de executar a operacao. O frontend restaura
+a sessao usando `GET /api/auth/me`.
 
 ## Frontend
 
-O frontend usa componentes standalone, Signals e o control flow nativo do Angular. O `ProductService` mantem o catalogo mockado e o carrinho em memoria. O `AuthService` concentra cadastro, login, logout, restauracao de sessao e upload de avatar.
+O frontend usa componentes standalone, Signals e o control flow do Angular.
 
-As rotas protegidas sao `/cart`, `/profile` e `/orders`. Usuarios nao autenticados sao redirecionados para `/login`.
+Responsabilidades principais:
 
-A URL da API e definida em `frontend/src/environments/environment.ts`. Para um ambiente publicado em outro dominio, essa URL precisa ser alterada antes do build do frontend.
+- `ProductService`: catalogo pela API e carrinho em memoria.
+- `AuthService`: cadastro, login, logout, sessao e avatar.
+- `ProductListComponent`: pagina inicial, banners, departamentos e produtos.
+- `ProductDetailComponent`: detalhes e adicao ao carrinho.
+
+As rotas protegidas sao `/cart`, `/profile` e `/orders`. Usuarios nao autenticados
+sao encaminhados para `/login`.
+
+Em desenvolvimento, o frontend usa o mesmo hostname pelo qual foi acessado e a porta
+`3000` para encontrar a API. Assim, o acesso pela rede local funciona, por exemplo:
+
+```text
+Frontend: http://192.168.0.15:4200
+API:      http://192.168.0.15:3000/api
+```
+
+Em producao, o frontend usa `/api` e o Nginx encaminha as requisicoes para o backend.
 
 ## Variaveis de ambiente
 
-O exemplo completo fica em `backend/.env.example`:
+Copie o arquivo de exemplo antes de iniciar o projeto:
+
+```powershell
+Copy-Item backend/.env.example backend/.env
+```
+
+Variaveis principais:
 
 ```text
 PORT=3000
 FRONTEND_ORIGIN=http://localhost:4200
 NODE_ENV=development
-RUSTFS_ENDPOINT=http://rustfs:9000
-RUSTFS_REGION=sa-east-1
-RUSTFS_ACCESS_KEY=...
-RUSTFS_SECRET_KEY=...
-RUSTFS_BUCKET=profile-images
 POSTGRES_HOST=postgres
 POSTGRES_PORT=5432
 POSTGRES_DB=ecommerce
 POSTGRES_USER=ecommerce
 POSTGRES_PASSWORD=...
+RUSTFS_ENDPOINT=http://rustfs:9000
+RUSTFS_REGION=sa-east-1
+RUSTFS_ACCESS_KEY=...
+RUSTFS_SECRET_KEY=...
+RUSTFS_BUCKET=profile-images
 ```
 
-Em desenvolvimento local, `POSTGRES_HOST` e `RUSTFS_ENDPOINT` normalmente apontam para `localhost`. Dentro do Compose, eles devem apontar para os nomes dos servicos e containers da rede Docker.
+Dentro do Docker, use os nomes dos servicos, como `postgres` e `rustfs`. Fora do Docker,
+normalmente use `localhost`.
 
-## Deploy
+Nunca versione `backend/.env` nem credenciais reais.
 
-O deploy recomendado e feito pela raiz do projeto:
+## Avatar e RustFS
 
-```powershell
-docker network create ecommerce-net
-docker network connect ecommerce-net rustfs
-Copy-Item backend/.env.example backend/.env
-docker compose up --build -d
+O upload segue o fluxo:
+
+```text
+Frontend -> POST /api/profile/avatar -> Backend -> RustFS
 ```
 
-O frontend e compilado na imagem `frontend` e servido por Nginx na porta `80`, publicada pelo Compose como `http://localhost:4200`. O backend roda em modo `production` na porta `3000`. O volume `postgres-data-v18` preserva o banco entre recriacoes dos containers.
+O backend valida o arquivo, envia o objeto ao bucket configurado e salva apenas sua
+referencia em `users.avatar_key`.
 
-Antes de publicar, altere as credenciais, configure `NODE_ENV=production`, ajuste `FRONTEND_ORIGIN` e mantenha `backend/.env` fora do Git. Dominio, HTTPS, firewall, monitoramento e backups automaticos nao sao configurados pelo Compose e pertencem a infraestrutura de producao.
+## Migracao de usuarios antigos
 
-## Migracao do JSON legado
-
-O comando abaixo deve ser executado uma vez, com o PostgreSQL disponivel:
+Para importar os usuarios de `backend/data/users.json`, com o PostgreSQL disponivel,
+execute uma vez:
 
 ```powershell
 cd backend
 npm run migrate:users
 ```
 
-A migracao importa `backend/data/users.json`. Depois da migracao, a API utiliza o PostgreSQL normalmente e nao altera o arquivo JSON.
+Depois da migracao, a aplicacao utiliza o PostgreSQL normalmente e nao le o arquivo JSON.

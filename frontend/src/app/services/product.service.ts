@@ -1,6 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, Observable, of } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface Product {
@@ -54,7 +54,7 @@ export class ProductService {
         return of([]);
       }),
     ).subscribe(products => {
-      this.products.set(products);
+      this.products.set(products.map(product => this.withApiImageUrl(product)));
       this.loading.set(false);
     });
   }
@@ -64,7 +64,25 @@ export class ProductService {
   }
 
   getProductByIdFromApi(id: string): Observable<Product> {
-    return this.http.get<Product>(`${environment.apiUrl}/products/${encodeURIComponent(id)}`);
+    return this.http
+      .get<Product>(`${environment.apiUrl}/products/${encodeURIComponent(id)}`)
+      .pipe(map(product => this.withApiImageUrl(product)));
+  }
+
+  private withApiImageUrl(product: Product): Product {
+    return {
+      ...product,
+      image: this.toApiUrl(product.image),
+      imageFallback: product.imageFallback ? this.toApiUrl(product.imageFallback) : product.imageFallback,
+    };
+  }
+
+  private toApiUrl(url: string): string {
+    if (!url.startsWith('/')) {
+      return url;
+    }
+
+    return `${environment.apiUrl.replace(/\/api$/, '')}${url}`;
   }
 
   addToCart(product: Product, quantity: number = 1): void {

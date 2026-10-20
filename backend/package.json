@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
-    "migrate:users": "node scripts/migrate-json-users.js"
+    "migrate:users": "node scripts/migrate-json-users.js",
+    "upload:product-images": "node scripts/upload-product-images.js"
   },
   "engines": {
     "node": ">=24"

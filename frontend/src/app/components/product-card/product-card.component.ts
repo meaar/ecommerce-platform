@@ -17,4 +17,13 @@ export class ProductCardComponent {
   addToCart(): void {
     this.productService.addToCart(this.product(), 1);
   }
+
+  onImageError(event: Event): void {
+    const fallback = this.product().imageFallback;
+    const image = event.target;
+
+    if (fallback && image instanceof HTMLImageElement && image.src !== fallback) {
+      image.src = fallback;
+    }
+  }
 }

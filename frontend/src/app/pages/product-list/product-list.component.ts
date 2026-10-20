@@ -62,4 +62,12 @@ export class ProductListComponent {
   selectSlide(index: number): void {
     this.currentSlide.set(index);
   }
+
+  onHeroImageError(event: Event, fallback: string | undefined): void {
+    const image = event.target;
+
+    if (fallback && image instanceof HTMLImageElement && image.src !== fallback) {
+      image.src = fallback;
+    }
+  }
 }

@@ -12,10 +12,10 @@ class ProfileService {
 
   async uploadAvatar(user, file) {
     const extension = path.extname(file.originalname).toLowerCase() || `.${file.mimetype.split('/')[1]}`;
-    const key = `avatars/${user.id}/${crypto.randomUUID()}${extension === '.jpeg' ? '.jpg' : extension}`;
+    const key = `${user.id}/${crypto.randomUUID()}${extension === '.jpeg' ? '.jpg' : extension}`;
 
     await this.objectStorage.putObject(new PutObjectCommand({
-      Bucket: env.rustfs.bucket,
+      Bucket: env.rustfs.buckets.profiles,
       Key: key,
       Body: file.buffer,
       ContentType: file.mimetype,
@@ -38,7 +38,7 @@ class ProfileService {
     }
 
     return this.objectStorage.getObject(new GetObjectCommand({
-      Bucket: env.rustfs.bucket,
+      Bucket: env.rustfs.buckets.profiles,
       Key: user.avatarKey,
     }));
   }

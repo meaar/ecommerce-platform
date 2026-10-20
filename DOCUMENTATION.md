@@ -13,7 +13,7 @@ O projeto possui dois aplicativos:
 Servicos utilizados:
 
 - PostgreSQL 18: usuarios, sessoes e produtos.
-- RustFS: armazenamento dos avatares, compativel com S3.
+- RustFS: armazenamento separado de avatares e imagens de produtos, compativel com S3.
 - Nginx: servidor do frontend em producao e proxy da API.
 - Docker Compose: orquestracao dos servicos.
 
@@ -180,7 +180,8 @@ RUSTFS_ENDPOINT=http://rustfs:9000
 RUSTFS_REGION=sa-east-1
 RUSTFS_ACCESS_KEY=...
 RUSTFS_SECRET_KEY=...
-RUSTFS_BUCKET=profile-images
+RUSTFS_PROFILE_BUCKET=profile-images
+RUSTFS_PRODUCT_BUCKET=product-images
 ```
 
 Dentro do Docker, use os nomes dos servicos, como `postgres` e `rustfs`. Fora do Docker,
@@ -190,14 +191,29 @@ Nunca versione `backend/.env` nem credenciais reais.
 
 ## Avatar e RustFS
 
-O upload segue o fluxo:
+O upload de avatar segue o fluxo:
 
 ```text
 Frontend -> POST /api/profile/avatar -> Backend -> RustFS
 ```
 
-O backend valida o arquivo, envia o objeto ao bucket configurado e salva apenas sua
-referencia em `users.avatar_key`.
+O backend valida o arquivo, envia o objeto ao bucket `profile-images` e salva apenas sua
+referencia em `users.avatar_key`. A chave segue o formato
+`<userId>/<uuid>.<extensao>` dentro do bucket de perfis.
+
+As imagens de produtos usam o bucket separado `product-images`. O upload autenticado
+e feito por:
+
+```text
+POST /api/products/:id/image
+Campo multipart: image
+```
+
+As chaves seguem o formato `<productId>/<uuid>.<extensao>` dentro do bucket de
+produtos. O campo
+`products.image_key` guarda essa referencia e a API passa a devolver a rota de imagem
+do produto. Se a imagem do RustFS falhar, o frontend usa a URL original armazenada em
+`products.image` como fallback.
 
 ## Migracao de usuarios antigos
 

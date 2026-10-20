@@ -3,6 +3,7 @@
     <img
       [src]="product().image"
       [alt]="product().name"
+      (error)="onImageError($event)"
       class="product-image"
       width="250"
       height="200"

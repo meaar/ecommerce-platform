@@ -9,6 +9,7 @@ export interface Product {
   price: number;
   description: string;
   image: string;
+  imageFallback?: string;
   category: string;
   rating: number;
   stock: number;

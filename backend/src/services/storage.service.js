@@ -12,16 +12,16 @@ class StorageService {
       },
       forcePathStyle: true,
     });
-    this.bucketReady = false;
+    this.readyBuckets = new Set();
   }
 
-  async ensureBucket() {
-    if (this.bucketReady) {
+  async ensureBucket(bucket) {
+    if (this.readyBuckets.has(bucket)) {
       return;
     }
 
     try {
-      await this.client.send(new HeadBucketCommand({ Bucket: env.rustfs.bucket }));
+      await this.client.send(new HeadBucketCommand({ Bucket: bucket }));
     } catch (error) {
       const isMissingBucket = error.name === 'NotFound' || error.$metadata?.httpStatusCode === 404;
 
@@ -29,19 +29,19 @@ class StorageService {
         throw error;
       }
 
-      await this.client.send(new CreateBucketCommand({ Bucket: env.rustfs.bucket }));
+      await this.client.send(new CreateBucketCommand({ Bucket: bucket }));
     }
 
-    this.bucketReady = true;
+    this.readyBuckets.add(bucket);
   }
 
   async putObject(command) {
-    await this.ensureBucket();
+    await this.ensureBucket(command.input.Bucket);
     return this.client.send(command);
   }
 
   async getObject(command) {
-    await this.ensureBucket();
+    await this.ensureBucket(command.input.Bucket);
     return this.client.send(command);
   }
 }

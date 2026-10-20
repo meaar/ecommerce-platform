@@ -58,4 +58,13 @@ export class ProductDetailComponent {
       setTimeout(() => this.addedToCart.set(false), 2000);
     }
   }
+
+  onImageError(event: Event): void {
+    const fallback = this.product()?.imageFallback;
+    const image = event.target;
+
+    if (fallback && image instanceof HTMLImageElement && image.src !== fallback) {
+      image.src = fallback;
+    }
+  }
 }

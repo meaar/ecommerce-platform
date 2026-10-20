@@ -27,7 +27,10 @@ const env = Object.freeze({
     region: process.env.RUSTFS_REGION || 'us-east-1',
     accessKey: process.env.RUSTFS_ACCESS_KEY || 'rustfsadmin',
     secretKey: process.env.RUSTFS_SECRET_KEY || 'rustfsadmin',
-    bucket: process.env.RUSTFS_BUCKET || 'profile-images',
+    buckets: Object.freeze({
+      profiles: process.env.RUSTFS_PROFILE_BUCKET || process.env.RUSTFS_BUCKET || 'profile-images',
+      products: process.env.RUSTFS_PRODUCT_BUCKET || 'product-images',
+    }),
   }),
 });
 

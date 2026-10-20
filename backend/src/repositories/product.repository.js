@@ -24,9 +24,11 @@ class ProductRepository {
         image TEXT NOT NULL,
         category VARCHAR(120) NOT NULL,
         rating NUMERIC(2, 1) NOT NULL CHECK (rating >= 0 AND rating <= 5),
-        stock INTEGER NOT NULL CHECK (stock >= 0)
+        stock INTEGER NOT NULL CHECK (stock >= 0),
+        image_key TEXT
       )
     `);
+    await this.pool.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS image_key TEXT');
 
     await this.pool.query(`
       INSERT INTO products (id, name, price, description, image, category, rating, stock)
@@ -59,7 +61,16 @@ class ProductRepository {
       category: row.category,
       rating: Number(row.rating),
       stock: row.stock,
+      imageKey: row.image_key,
     };
+  }
+
+  async updateImageKey(id, imageKey) {
+    const result = await this.pool.query(
+      'UPDATE products SET image_key = $2 WHERE id = $1 RETURNING *',
+      [id, imageKey],
+    );
+    return this.mapRow(result.rows[0]);
   }
 }
 

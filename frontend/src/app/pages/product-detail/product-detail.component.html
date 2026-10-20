@@ -14,6 +14,7 @@
       <div class="image-section">
         <img
           [src]="prod.image"
+          (error)="onImageError($event)"
           [alt]="prod.name"
           class="main-image"
           width="500"

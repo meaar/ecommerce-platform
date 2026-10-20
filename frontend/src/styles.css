@@ -4,11 +4,43 @@
   box-sizing: border-box;
 }
 
+:root {
+  /* Altere estes tokens para personalizar a identidade visual da aplicação. */
+  --color-page-bg: #f5f7fb;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8fafc;
+  --color-surface-subtle: #f1f5f9;
+  --color-interactive-hover: #eff6ff;
+  --color-text: #1f2937;
+  --color-heading: #0f172a;
+  --color-text-muted: #526174;
+  --color-text-subtle: #64748b;
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-accent: #f8b84e;
+  --color-accent-soft: #fff3d9;
+  --color-success: #15803d;
+  --color-success-surface: #dcfce7;
+  --color-danger: #b91c1c;
+  --color-danger-surface: #fef2f2;
+  --color-disabled: #cbd5e1;
+  --color-on-brand: #ffffff;
+  --color-header: #101827;
+  --color-header-secondary: #192337;
+  --color-on-header: #ffffff;
+  --color-header-control-bg: rgba(255, 255, 255, .08);
+  --color-header-control-border: rgba(255, 255, 255, .2);
+  --shadow-card: 0 2px 8px rgba(15, 23, 42, .1);
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  color: #333;
-  background-color: #f5f5f5;
+  color: var(--color-text);
+  background-color: var(--color-page-bg);
   line-height: 1.6;
+  transition: color .2s ease, background-color .2s ease;
 }
 
 button {
@@ -22,7 +54,11 @@ html, body {
 
 /* Accessibility */
 :focus {
-  outline: 2px solid #0066cc;
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -38,3 +74,146 @@ html, body {
   white-space: nowrap;
   border-width: 0;
 }
+
+body.dark-mode {
+  --color-page-bg: #0f172a;
+  --color-surface: #182235;
+  --color-surface-muted: #202d42;
+  --color-surface-subtle: #27364d;
+  --color-interactive-hover: #263b5a;
+  --color-text: #e2e8f0;
+  --color-heading: #f8fafc;
+  --color-text-muted: #c0ccda;
+  --color-text-subtle: #a9b7c8;
+  --color-border: #3b4b63;
+  --color-border-strong: #53657e;
+  --color-primary: #60a5fa;
+  --color-primary-hover: #93c5fd;
+  --color-accent: #f8c15c;
+  --color-accent-soft: #493a1f;
+  --color-success: #86efac;
+  --color-success-surface: #16452c;
+  --color-danger: #fca5a5;
+  --color-danger-surface: #4a2328;
+  --color-disabled: #64748b;
+  --color-on-brand: #0f172a;
+  --color-header: #0b1220;
+  --color-header-secondary: #131f33;
+  --color-on-header: #f8fafc;
+  --color-header-control-bg: rgba(255, 255, 255, .08);
+  --color-header-control-border: rgba(255, 255, 255, .2);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, .24);
+  color: var(--color-text);
+  background-color: var(--color-page-bg);
+  color-scheme: dark;
+}
+
+body.dark-mode .main-content { color: var(--color-text); }
+
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border-color: var(--color-border-strong);
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+  color: var(--color-text-subtle);
+}
+
+body.dark-mode .catalog-message,
+body.dark-mode .department-card,
+body.dark-mode .product-card,
+body.dark-mode .cart-items,
+body.dark-mode .summary-card,
+body.dark-mode .empty-content,
+body.dark-mode .auth-card,
+body.dark-mode .profile-card,
+body.dark-mode .empty-orders {
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+body.dark-mode .catalog-message { color: var(--color-text-muted); }
+body.dark-mode .catalog-error {
+  color: #fca5a5;
+  background: #3a2024;
+  border-color: #7f1d1d;
+}
+body.dark-mode .department-card,
+body.dark-mode .product-name,
+body.dark-mode .section-heading h2,
+body.dark-mode .cart-section h1,
+body.dark-mode .cart-table th,
+body.dark-mode .summary-card h2,
+body.dark-mode .summary-row.total,
+body.dark-mode .empty-content h2,
+body.dark-mode .details-section header h1,
+body.dark-mode .amount,
+body.dark-mode .description h2,
+body.dark-mode .not-found h1,
+body.dark-mode .name,
+body.dark-mode .subtotal,
+body.dark-mode .profile-card h1,
+body.dark-mode .orders-page h1,
+body.dark-mode .empty-orders h2 {
+  color: #f8fafc;
+}
+body.dark-mode .department-icon { background: var(--color-accent-soft); color: var(--color-accent); }
+body.dark-mode .section-heading a,
+body.dark-mode .breadcrumb a,
+body.dark-mode .back-link,
+body.dark-mode .btn-continue-shopping { color: #7dd3fc; }
+body.dark-mode .section-heading a:hover,
+body.dark-mode .back-link:hover { color: var(--color-accent); }
+body.dark-mode .category,
+body.dark-mode .description,
+body.dark-mode .stars,
+body.dark-mode .currency,
+body.dark-mode .summary-row,
+body.dark-mode .empty-content p,
+body.dark-mode .not-found p,
+body.dark-mode .intro,
+body.dark-mode .switch,
+body.dark-mode .hint,
+body.dark-mode .orders-heading p:last-child,
+body.dark-mode .empty-orders p,
+body.dark-mode .price { color: #94a3b8; }
+body.dark-mode .rating { background-color: var(--color-surface); }
+body.dark-mode .stock,
+body.dark-mode .price-section { background-color: var(--color-surface-subtle); }
+body.dark-mode .main-image,
+body.dark-mode .image-container,
+body.dark-mode .product-thumbnail { background-color: #273449; }
+body.dark-mode .quantity-selector,
+body.dark-mode .quantity-selector button,
+body.dark-mode .btn-view { background-color: #374151; }
+body.dark-mode .quantity-selector button { color: #e5e7eb; }
+body.dark-mode .quantity-selector button:hover:not(:disabled),
+body.dark-mode .btn-view:hover { background-color: #4b5563; }
+body.dark-mode .btn-view { color: #e5e7eb; border-color: #4b5563; }
+body.dark-mode .cart-table thead { background-color: #273449; border-color: #475569; }
+body.dark-mode .summary-row { border-color: #374151; }
+body.dark-mode .summary-row.total { border-color: var(--color-text-subtle); }
+body.dark-mode .cart-item { border-color: #374151; }
+body.dark-mode .cart-item:hover { background-color: #273449; }
+body.dark-mode .auth-card,
+body.dark-mode .profile-card,
+body.dark-mode .empty-orders { box-shadow: 0 16px 40px rgba(0, 0, 0, .25); }
+body.dark-mode .file-picker { color: #93c5fd; border-color: #60a5fa; }
+body.dark-mode .success-message { color: #bbf7d0; background-color: #14532d; }
+body.dark-mode .error { color: #fca5a5; }
+body.dark-mode .department-sidebar { background: #172235; }
+body.dark-mode .department-sidebar button { color: var(--color-border-strong); }
+body.dark-mode .department-sidebar button:hover,
+body.dark-mode .department-sidebar button.active {
+  color: #f8fafc;
+  background: #273449;
+}
+body.dark-mode .department-content-heading { border-color: #374151; }
+body.dark-mode .department-content-heading h2,
+body.dark-mode .subcategory-group .subcategory-title { color: #f8fafc; }
+body.dark-mode .subcategory-group a { color: #a8b3c2; }

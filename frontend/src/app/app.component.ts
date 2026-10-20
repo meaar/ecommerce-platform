@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { ProductService } from './services/product.service';
 import { AuthService } from './services/auth.service';
+import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,7 @@ import { AuthService } from './services/auth.service';
 export class AppComponent {
   protected readonly productService = inject(ProductService);
   protected readonly authService = inject(AuthService);
+  protected readonly themeService = inject(ThemeService);
   protected readonly title = 'E-commerce';
   protected readonly routerLinkActiveOptions = { exact: true };
   protected accountMenuOpen = false;

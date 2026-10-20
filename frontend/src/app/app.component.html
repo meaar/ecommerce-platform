@@ -14,6 +14,18 @@
     <nav class="nav-menu" role="navigation" aria-label="Navegação principal">
       <ul>
         <li>
+          <button
+            type="button"
+            class="theme-toggle"
+            [attr.aria-label]="themeService.isDarkMode() ? 'Ativar modo claro' : 'Ativar modo escuro'"
+            [attr.aria-pressed]="themeService.isDarkMode()"
+            (click)="themeService.toggle()"
+          >
+            <span aria-hidden="true">{{ themeService.isDarkMode() ? '☀' : '☾' }}</span>
+            <span class="theme-toggle-label">{{ themeService.isDarkMode() ? 'Claro' : 'Escuro' }}</span>
+          </button>
+        </li>
+        <li>
           <a [routerLink]="['/cart']" routerLinkActive="active" class="cart-link" aria-label="Carrinho">
             <span class="nav-icon">&#128722;</span>
             <span class="cart-label">Carrinho</span>

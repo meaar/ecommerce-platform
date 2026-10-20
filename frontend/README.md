@@ -12,6 +12,7 @@ Frontend da aplicação de e-commerce desenvolvido com Angular 22 e Nginx.
 - Catálogo com imagens do bucket `product-images` e fallback para a URL original.
 - Checkout e visualização de pedidos.
 - Layout responsivo e navegação acessível.
+- Modo claro/escuro com preferência persistida no navegador.
 
 ## Estrutura
 
@@ -45,6 +46,17 @@ frontend/
   Por exemplo, ao abrir `http://192.168.0.15:4200`, a API será acessada em
   `http://192.168.0.15:3000/api`.
 - **Produção:** o Angular utiliza `/api` como endereço da API, e o Nginx encaminha as requisições para o backend, conforme configurado em `nginx.conf`.
+
+## Tema e identidade visual
+
+As cores da aplicação ficam centralizadas nos tokens CSS de
+`src/styles.css`, dentro do seletor `:root`. Para personalizar a identidade
+visual, altere os valores `--color-*` desse bloco. O bloco
+`body.dark-mode` define os valores equivalentes para o modo escuro.
+
+O tema pode ser alternado pelo botão no cabeçalho. A escolha é salva em
+`localStorage` com a chave `ecommerce-theme`; na primeira visita, a preferência
+de tema do sistema operacional é usada como padrão.
 
 ## Scripts
 

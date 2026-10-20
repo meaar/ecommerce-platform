@@ -8,7 +8,7 @@
 }
 
 .breadcrumb a {
-  color: #0066cc;
+  color: var(--color-primary);
   text-decoration: none;
 }
 
@@ -17,7 +17,7 @@
 }
 
 .breadcrumb span {
-  color: #999;
+  color: var(--color-text-subtle);
   margin: 0 0.5rem;
 }
 
@@ -37,7 +37,7 @@
   width: 100%;
   height: auto;
   border-radius: 8px;
-  background-color: #f0f0f0;
+  background-color: var(--color-surface-subtle);
 }
 
 .details-section {
@@ -49,29 +49,29 @@
 .details-section header h1 {
   font-size: 2rem;
   margin: 0 0 0.5rem 0;
-  color: #0a0e27;
+  color: var(--color-heading);
 }
 
 .category {
-  color: #999;
+  color: var(--color-text-subtle);
   margin: 0;
   font-size: 0.95rem;
 }
 
 .rating {
   padding: 1rem;
-  background-color: #f9f9f9;
+  background-color: var(--color-surface-muted);
   border-radius: 4px;
 }
 
 .stars {
   font-size: 1rem;
-  color: #666;
+  color: var(--color-text-muted);
 }
 
 .price-section {
   padding: 1.5rem;
-  background-color: #f0f0f0;
+  background-color: var(--color-surface-subtle);
   border-radius: 8px;
 }
 
@@ -83,23 +83,23 @@
 
 .label {
   font-weight: 600;
-  color: #333;
+  color: var(--color-text);
 }
 
 .amount {
   font-size: 2rem;
   font-weight: 700;
-  color: #0a0e27;
+  color: var(--color-heading);
 }
 
 .description h2 {
   font-size: 1.1rem;
   margin-bottom: 0.5rem;
-  color: #0a0e27;
+  color: var(--color-heading);
 }
 
 .description p {
-  color: #666;
+  color: var(--color-text-muted);
   line-height: 1.6;
   margin: 0;
 }
@@ -109,17 +109,17 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background-color: #f9f9f9;
+  background-color: var(--color-surface-muted);
   border-radius: 4px;
 }
 
 .available {
-  color: #27ae60;
+  color: var(--color-success);
   font-weight: 600;
 }
 
 .unavailable {
-  color: #e74c3c;
+  color: var(--color-danger);
   font-weight: 600;
 }
 
@@ -137,14 +137,14 @@
 
 .quantity-control label {
   font-weight: 600;
-  color: #333;
+  color: var(--color-text);
   font-size: 0.9rem;
 }
 
 .quantity-selector {
   display: flex;
   align-items: center;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border-strong);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -153,18 +153,18 @@
   width: 40px;
   height: 40px;
   border: none;
-  background-color: #f0f0f0;
+  background-color: var(--color-surface-subtle);
   cursor: pointer;
   font-size: 1.2rem;
   transition: background-color 0.2s ease;
 }
 
 .quantity-selector button:hover:not(:disabled) {
-  background-color: #e0e0e0;
+  background-color: var(--color-border-strong);
 }
 
 .quantity-selector button:disabled {
-  background-color: #f9f9f9;
+  background-color: var(--color-surface-muted);
   cursor: not-allowed;
   opacity: 0.5;
 }
@@ -180,7 +180,7 @@
 .btn-add-cart {
   flex: 1;
   padding: 0.75rem 1.5rem;
-  background-color: #0066cc;
+  background-color: var(--color-primary);
   color: white;
   border: none;
   border-radius: 4px;
@@ -192,17 +192,17 @@
 }
 
 .btn-add-cart:hover:not(:disabled) {
-  background-color: #0052a3;
+  background-color: var(--color-primary-hover);
 }
 
 .btn-add-cart:disabled {
-  background-color: #ccc;
+  background-color: var(--color-disabled);
   cursor: not-allowed;
 }
 
 .success-message {
   padding: 1rem;
-  background-color: #d4edda;
+  background-color: var(--color-success-surface);
   color: #155724;
   border-radius: 4px;
   text-align: center;
@@ -210,14 +210,14 @@
 }
 
 .back-link {
-  color: #0066cc;
+  color: var(--color-primary);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.3s ease;
 }
 
 .back-link:hover {
-  color: #0052a3;
+  color: var(--color-primary-hover);
   text-decoration: underline;
 }
 
@@ -229,18 +229,18 @@
 .not-found h1 {
   font-size: 2rem;
   margin-bottom: 1rem;
-  color: #0a0e27;
+  color: var(--color-heading);
 }
 
 .not-found p {
-  color: #666;
+  color: var(--color-text-muted);
   margin-bottom: 2rem;
 }
 
 .btn-back {
   display: inline-block;
   padding: 0.75rem 1.5rem;
-  background-color: #0066cc;
+  background-color: var(--color-primary);
   color: white;
   text-decoration: none;
   border-radius: 4px;
@@ -249,7 +249,7 @@
 }
 
 .btn-back:hover {
-  background-color: #0052a3;
+  background-color: var(--color-primary-hover);
 }
 
 @media (max-width: 1024px) {
